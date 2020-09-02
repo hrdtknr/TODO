@@ -7,45 +7,30 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 func main() {
-	fmt.Println("Hello, 世界")
-	fmt.Println("aaaaaa")
+	fmt.Println("Hello")
 
-//	db, err:=sql.Open("mysql", "root:1234@tcp(host:3306)/go")
-	db, err:=sql.Open("mysql", "root:@tcp(host:3306)/go")
+//	db, err:=sql.Open("mysql", "root:1234@tcp(host:3306)/localhost")
+//	db, err:=sql.Open("mysql", "root:@tcp(host:3306)/go")
+	db, err:=sql.Open("mysql", "root:1234@tcp(host:3306)/go")
 	if err != nil {
 		panic(err.Error())
 	}
-
-	fmt.Println("bbbbb")
-
 	defer db.Close() //defer:延期する
 
-	fmt.Println("ccccc")
-
-	rows, err:= db.Query("SELECT * FROM go.todo")
-
-	fmt.Println("ddddd")
-
+	rows, err:= db.Query("SELECT * FROM todo")
+	defer rows.Close()
 	if err != nil {
 		panic(err.Error())
 	}
 
-	fmt.Println("eeeee")
-
-	columns, err := rows.Columns()
-	if err != nil {
-		panic(err.Error())
+	for rows.Next(){
+		var id int
+		var  name string
+		var todo string
+		if err := rows.Scan(&id, &name, &todo); err != nil{
+			panic(err.Error())
+		}
+		fmt.Println(id, name, todo)
 	}
 
-	fmt.Println("fff")
-
-	fmt.Println(columns)
-
-	fmt.Println("ggg")
 }
-
-//202009021150
-
-//GitHubから変更
-
-//pullするときにmasterブランチに移動してから？
