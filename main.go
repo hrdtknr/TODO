@@ -38,16 +38,18 @@ func main() {
 
 	port := "8080"
 
-	http.HandleFunc("/", handleIndex)
+	http.Handle("/", http.FileServer(http.Dir("./src")))
+	http.HandleFunc("/todos", handleIndex) //go側でインポート設定する必要があった
+
 	log.Printf("listening port %s", port)
 	log.Print(http.ListenAndServe(":"+port, nil))
 
-//	http.HandleFunc("/test", TestHandler)
-//	http.ListenAndServe(":8080", nil)
-
-
-	db.Close()//toriaezu kokode close
+	db.Close()//今はエラー出てないから大丈夫だけどここでcloseは危険な気がする
 }
+
+
+
+
 
 func handleIndex(w http.ResponseWriter, r *http.Request){
 	t, err := template.ParseFiles("src/index.html")
