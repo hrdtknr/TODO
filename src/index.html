@@ -35,5 +35,17 @@
 <p>index.jsの内容をこの下に表示したい</p>
 
 <script src="index.js"></script>
+
+<h1>html内に埋め込んで動作確認してから分けてみる</h1>
+
+<script>
+  function test(){
+    var num = 0;
+    var test = "test";
+  }
+  window.onload = function(){
+    test();
+  }
+</script>
 </body>
 </html>
