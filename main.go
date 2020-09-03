@@ -3,15 +3,25 @@ package main
 import (
 	"fmt"
 	"database/sql"
-//	"time"
 	"log"
-
+	//"time"
 	"net/http"
 	"encoding/json"
 
+	"html/template"
 
 	_ "github.com/go-sql-driver/mysql"
 )
+
+type Todo struct {
+	ID int
+	Name string
+	Todo string
+}
+
+type Todos []Todo
+
+var todos Todos
 
 var db, err =sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
 /*
@@ -22,41 +32,35 @@ defer db.Close() //defer:延期する
 */
 
 func main() {
-	fmt.Println("Hello")
 
-	/*
-	for i := 0; i < 2; i++ {
-		invokeMethod()
-	}
-*/
+	getDB()
+	//log.Println(todos)//todosにDBの情報は入ってる
 
-	http.HandleFunc("/test", TestHandler)
-	http.ListenAndServe(":8080", nil)
+	port := "8080"
+
+	http.HandleFunc("/", handleIndex)
+	log.Printf("listening port %s", port)
+	log.Print(http.ListenAndServe(":"+port, nil))
+
+//	http.HandleFunc("/test", TestHandler)
+//	http.ListenAndServe(":8080", nil)
 
 
-	db.Close()//toriaezukokodeclose
+	db.Close()//toriaezu kokode close
 }
 
-type Todo struct {
-	ID int
-	Name string
-	Todo string
+func handleIndex(w http.ResponseWriter, r *http.Request){
+	t, err := template.ParseFiles("src/index.html")
+	if err != nil {
+		log.Fatalf("src error: %v", err)
+	}
+	if err := t.Execute(w, todos) //第二引数の内容を渡す
+	err != nil {
+		log.Printf("failed to execute template: %v", err)
+	}
 }
 
-type Todos []Todo
-
-
-func TestHandler(w http.ResponseWriter, r *http.Request){
-/*
-	todo:= Todo {
-		ID: 1,
-		Name: "nameeeeeee",
-		Todo: "Todoooooooooo",
-	}
-*/
-
-	var todos Todos
-
+func getDB(){
 	rows, err:= db.Query("SELECT * FROM todo")
 	defer rows.Close()
 	if err != nil {
@@ -66,28 +70,63 @@ func TestHandler(w http.ResponseWriter, r *http.Request){
 
 	for rows.Next(){
 		var id int
-		var  name string
+		var name string
 		var todo string
 		if err := rows.Scan(&id, &name, &todo); err != nil{
 			log.Println(err)
 			return
 		}
-//		fmt.Println(id, name, todo)
 
+		// Todo型の変数todoTmpに取得した情報を代入
 		todoTmp:= Todo {
 			ID: id,
 			Name: name,
 			Todo: todo,
 		}
-
+		//配列todosに要素を追加
+		//変数名は工夫したい(分かりにくい)
 		todos = append(todos, todoTmp)
 	}
+}
 
+
+func TestHandler(w http.ResponseWriter, r *http.Request){
+
+
+/*
+	rows, err:= db.Query("SELECT * FROM todo")
+	defer rows.Close()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	for rows.Next(){
+		var id int
+		var name string
+		var todo string
+		if err := rows.Scan(&id, &name, &todo); err != nil{
+			log.Println(err)
+			return
+		}
+
+		// Todo型の変数todoTmpに取得した情報を代入
+		todoTmp:= Todo {
+			ID: id,
+			Name: name,
+			Todo: todo,
+		}
+		//配列todosに要素を追加
+		//変数名は工夫したい(分かりにくい)
+		todos = append(todos, todoTmp)
+	}
+*/
 
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(todos)
 }
+
 
 func invokeMethod() {
 
@@ -139,9 +178,6 @@ func invokeMethod() {
 	fmt.Println("\n-----処理結果-----\n")
 	read()
 }
-
-
-
 
 func insert(name string, todo string){
 	ins, err := db.Prepare("INSERT INTO todo(name, todo) VALUES(?,?)")
