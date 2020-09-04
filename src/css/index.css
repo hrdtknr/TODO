@@ -10,7 +10,10 @@
   border-collapse: collapse;
   background-color: aqua;
 }
-
+table th, table td{
+  border: 1px solid #456789;
+  padding: 10px;
+}
 .javaScriptTest {
   background-color: coral;
 }

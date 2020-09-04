@@ -5,18 +5,22 @@
     <link href="css/index.css" rel="stylesheet"></link>
     <title>仮タイトル</title>
 </head>
+
 <body>
   <div>
     <h1 class="title">TODO LIST</h1>
-    <a href="http://localhost:8080/todos">再読み込み</a>
+    <button>
+      <a href="http://localhost:8080/todoList">再読み込み</a>
+    </button>
   </div>
 
   <div class="newTodo">
+    <p>新規TODO追加</p>
     <form>
       <input type="text" name="newName" placeholder="Name">
       <input type="text" name="newTodo" placeholder="Todo">
       <button type="submit" name="add" value="add">
-        新規TODO追加
+        追加
       </button>
     </form>
   </div>
@@ -28,8 +32,8 @@
           <th>ID</th>
           <th>Name</th>
           <th>Todo</th>
-          <th></th>
-          <th></th>
+          <th>Edit</th>
+          <th>Delete</th>
         </tr>
       </thead>
       <tbody>

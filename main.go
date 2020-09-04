@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 	"net/http"
-	"encoding/json"
+//	"encoding/json"
 	"strconv"
 
 	"html/template"
@@ -21,10 +21,10 @@ type Todo struct {
 	Todo string
 }
 
-//Todo型の構造体Todos
-type Todos []Todo
+//Todo型の構造体TodoList
+type TodoList []Todo
 
-var todos Todos
+var todoList TodoList
 
 var db, err =sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
 /*
@@ -38,19 +38,12 @@ defer db.Close() //defer:延期する
 func main() {
 
 	getDB()
-	//log.Println(todos)//todosにDBの情報は入ってる
-/*
-	//time <=> string test
-	now := time.Now()
-	log.Println(now)
-	str := timeToString(now)
-	log.Println(str)
-*/
+
 
 	port := "8080"
 
 	http.Handle("/", http.FileServer(http.Dir("./src")))
-	http.HandleFunc("/todos", handleIndex) //go側でインポート設定する必要があった
+	http.HandleFunc("/todoList", handleIndex) //go側でインポート設定する必要があった
 
 //	http.handleFunc("/test", handleTest)
 
@@ -61,54 +54,6 @@ func main() {
 
 	db.Close()//今はエラー出てないから大丈夫だけどここでcloseは危険な気がする
 }
-/*
-//handleIndexと同じ処理
-func handleTest(w http.ResponseWriter, r *http.Request){
-	getDB()
-	t, err := template.ParseFiles("src/index.html")
-	if err != nil {
-		log.Fatalf("src error: %v", err)
-	}
-	if err := t.Execute(w, todos) //第二引数の内容を渡す
-	err != nil {
-		log.Printf("failed to execute template: %v", err)
-	}
-
-	//以下の処理を別枠に移したい
-	//javascriptで「新規Todo追加」を押した後、動的に新規データを追加するのがいいのかな
-	//web側の表示和はjavascriptに任せて
-	//裏でDBの操作をキッチリやっておく
-	log.Printf(r.FormValue("edit"))
-	if(r.FormValue("edit") == "test_sendvalue"){
-		log.Println("sucsess")
-		insert("Form", timeToString(time.Now()))
-	} else {
-		log.Println("no")
-	}
-
-
-	//invoke delete method
-	log.Printf(r.FormValue("delete"))
-	i, err := strconv.Atoi(r.FormValue("delete")) // string -> int
-	delete(i) // send delete id
-
-
-	//check input data
-	log.Println(r.FormValue("newName"))
-	log.Println(r.FormValue("newTodo"))
-	//invoke insert method
-	if (r.FormValue("add") == "add") {
-		insert(r.FormValue("newName"), r.FormValue("newTodo"))
-	}
-
-	log.Println(r.FormValue("edit"))
-	log.Println(r.FormValue("editName"))
-	log.Println(r.FormValue("editTodo"))
-	i2, err := strconv.Atoi(r.FormValue("edit"))
-	update(i2, r.FormValue("editName"), r.FormValue("editTodo"))
-}
-*/
-
 
 func handleIndex(w http.ResponseWriter, r *http.Request){
 	getDB()
@@ -116,7 +61,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request){
 	if err != nil {
 		log.Fatalf("src error: %v", err)
 	}
-	if err := t.Execute(w, todos) //第二引数の内容を渡す
+	if err := t.Execute(w, todoList) //第二引数の内容を渡す
 	err != nil {
 		log.Printf("failed to execute template: %v", err)
 	}
@@ -125,7 +70,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request){
 	log.Printf(r.FormValue("edit"))
 	if(r.FormValue("edit") == "test_sendvalue"){
 		log.Println("sucsess")
-		insert("Form", timeToString(time.Now()))
+//		insert("Form", timeToString(time.Now()))
 	} else {
 		log.Println("no")
 	}
@@ -159,6 +104,9 @@ func getDB(){
 		return
 	}
 
+	//ここで仮のリスト
+	var todoListTmp TodoList
+
 	for rows.Next(){
 		var id int
 		var name string
@@ -175,100 +123,21 @@ func getDB(){
 			Name: name,
 			Todo: todo,
 		}
-		//配列todosに要素を追加
+		//配列todoListに要素を追加
 		//変数名は工夫したい(分かりにくい)
-		todos = append(todos, todoTmp)
+		todoListTmp = append(todoListTmp, todoTmp)
+		//ここで上書き処理をすればいいのでは
 	}
+
+	//仮リストの中身を元リストへ代入（appendではない
+	todoList = todoListTmp
 }
-
-
-func TestHandler(w http.ResponseWriter, r *http.Request){
-
-
 /*
-	rows, err:= db.Query("SELECT * FROM todo")
-	defer rows.Close()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	for rows.Next(){
-		var id int
-		var name string
-		var todo string
-		if err := rows.Scan(&id, &name, &todo); err != nil{
-			log.Println(err)
-			return
-		}
-
-		// Todo型の変数todoTmpに取得した情報を代入
-		todoTmp:= Todo {
-			ID: id,
-			Name: name,
-			Todo: todo,
-		}
-		//配列todosに要素を追加
-		//変数名は工夫したい(分かりにくい)
-		todos = append(todos, todoTmp)
-	}
-*/
-
+//これも動いてないかも
+func TestHandler(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(todos)
-}
-
-/*
-func invokeMethod() {
-
-	fmt.Println("-----一覧表示-----")
-	read()
-	fmt.Println("\n----------\n")
-
-	//処理決定
-	var input int
-	fmt.Println("挿入: 1\n削除: 2\n更新: 3\n")
-	fmt.Scan(&input)
-
-	// web操作に切り替えるので、汚いけどとりあえず保留
-	switch(input) {
-		case 1:
-			fmt.Printf("入力: %d 処理: 挿入\n",input)
-			fmt.Println("\n----------\n")
-			var name string
-			var todo string
-			fmt.Print("名前を入力：")
-			fmt.Scan(&name)
-			fmt.Print("TODOを入力：")
-			fmt.Scan(&todo)
-			insert(name, todo)
-		case 2:
-			fmt.Printf("入力: %d 処理: 削除\n",input)
-			fmt.Println("\n----------\n")
-			var id int
-			fmt.Print("削除行を入力：")
-			fmt.Scan(&id)
-			delete(id)
-		case 3:
-			fmt.Printf("入力: %d 処理: 更新\n",input)
-			fmt.Println("\n----------\n")
-			var name string
-			var todo string
-			var id int
-			fmt.Print("更新idを入力：")
-			fmt.Scan(&id)
-			fmt.Print("名前を入力：")
-			fmt.Scan(&name)
-			fmt.Print("TODOを入力：")
-			fmt.Scan(&todo)
-			update(name, todo, id)
-		default:
-			fmt.Println("該当しない処理です")
-	}
-
-	fmt.Println("\n-----処理結果-----\n")
-	read()
+	json.NewEncoder(w).Encode(todoList)
 }
 */
 
@@ -321,8 +190,9 @@ func read(){
 
 
 
-
-//
+/*
+//time型<->string型
+//使わないので後で消す
 var layout = "2006-01-02 15:04:05"
 func stringToTime(str string) time.Time {
 	t, _ := time.Parse(layout, str)
@@ -332,3 +202,4 @@ func timeToString(t time.Time) string {
 	str := t.Format(layout)
 	return str
 }
+*/
