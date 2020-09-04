@@ -1,0 +1,16 @@
+.title {
+  background-color: blueviolet;
+}
+
+.newTodo {
+ background-color: chartreuse;
+}
+
+.todolist {
+  border-collapse: collapse;
+  background-color: aqua;
+}
+
+.javaScriptTest {
+  background-color: coral;
+}
