@@ -5,7 +5,7 @@
     <title>仮タイトル</title>
 </head>
 <body>
-<h6>{{.}}</h6> <!--全部表示-->
+<h6 id="test">{{.}}</h6> <!--全部表示-->
 <h6>{{index . 1}}</h6> <!--構造体のindex 1を表示-->
 <h6>{{(index . 5).ID}}</h6> <!-- 構造体index5のID-->
 <ul>
@@ -39,13 +39,45 @@
 <h1>html内に埋め込んで動作確認してから分けてみる</h1>
 
 <script>
-  function test(){
-    var num = 0;
-    var test = "test";
-  }
-  window.onload = function(){
-    test();
+  const test = document.getElementById('test');
+  console.log(test);
+  const test2 = test.textContent;
+  console.log(test2);
+  console.log(test2[1]);
+  console.log(test2[2]);
+
+  for(var i = 0; i < 20; i++){
+    console.log(test2[i]);
   }
 </script>
+
+<!--{{range .}}  {{end}} で要素全部だせる-->
+<ul>
+  {{range .}}
+  <li>{{.ID}} : {{.Name}}</li>
+  {{end}}
+</ul>
+
+
+<table>
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Todo</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range .}}
+    <tr>
+      <td>{{.ID}}</td>
+      <td>{{.Name}}</td>
+      <td>{{.Todo}}</td>
+    </tr>
+    {{end}}
+  </tbody>
+
+
+</table>
 </body>
 </html>
