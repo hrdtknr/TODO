@@ -14,12 +14,14 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+//構造体の変数名の戦闘を大文字にしないとテンプレートファイルに読みこめない
 type Todo struct {
 	ID int
 	Name string
 	Todo string
 }
 
+//Todo型の構造体Todos
 type Todos []Todo
 
 var todos Todos
@@ -37,29 +39,32 @@ func main() {
 
 	getDB()
 	//log.Println(todos)//todosにDBの情報は入ってる
-
+/*
 	//time <=> string test
 	now := time.Now()
 	log.Println(now)
 	str := timeToString(now)
 	log.Println(str)
+*/
 
 	port := "8080"
 
 	http.Handle("/", http.FileServer(http.Dir("./src")))
 	http.HandleFunc("/todos", handleIndex) //go側でインポート設定する必要があった
 
+//	http.handleFunc("/test", handleTest)
+
+
+
 	log.Printf("listening port %s", port)
 	log.Print(http.ListenAndServe(":"+port, nil))
 
 	db.Close()//今はエラー出てないから大丈夫だけどここでcloseは危険な気がする
 }
-
-
-
-
-
-func handleIndex(w http.ResponseWriter, r *http.Request){
+/*
+//handleIndexと同じ処理
+func handleTest(w http.ResponseWriter, r *http.Request){
+	getDB()
 	t, err := template.ParseFiles("src/index.html")
 	if err != nil {
 		log.Fatalf("src error: %v", err)
@@ -69,7 +74,11 @@ func handleIndex(w http.ResponseWriter, r *http.Request){
 		log.Printf("failed to execute template: %v", err)
 	}
 
-//	log.Printf(r.FormValue("edit"))
+	//以下の処理を別枠に移したい
+	//javascriptで「新規Todo追加」を押した後、動的に新規データを追加するのがいいのかな
+	//web側の表示和はjavascriptに任せて
+	//裏でDBの操作をキッチリやっておく
+	log.Printf(r.FormValue("edit"))
 	if(r.FormValue("edit") == "test_sendvalue"){
 		log.Println("sucsess")
 		insert("Form", timeToString(time.Now()))
@@ -78,12 +87,68 @@ func handleIndex(w http.ResponseWriter, r *http.Request){
 	}
 
 
+	//invoke delete method
 	log.Printf(r.FormValue("delete"))
-	i, err := strconv.Atoi(r.FormValue("delete"))
-	delete(i)
-	//再取得 ここでやるとコピーが無限に増える
-	//getDB()
+	i, err := strconv.Atoi(r.FormValue("delete")) // string -> int
+	delete(i) // send delete id
 
+
+	//check input data
+	log.Println(r.FormValue("newName"))
+	log.Println(r.FormValue("newTodo"))
+	//invoke insert method
+	if (r.FormValue("add") == "add") {
+		insert(r.FormValue("newName"), r.FormValue("newTodo"))
+	}
+
+	log.Println(r.FormValue("edit"))
+	log.Println(r.FormValue("editName"))
+	log.Println(r.FormValue("editTodo"))
+	i2, err := strconv.Atoi(r.FormValue("edit"))
+	update(i2, r.FormValue("editName"), r.FormValue("editTodo"))
+}
+*/
+
+
+func handleIndex(w http.ResponseWriter, r *http.Request){
+	getDB()
+	t, err := template.ParseFiles("src/index.html")
+	if err != nil {
+		log.Fatalf("src error: %v", err)
+	}
+	if err := t.Execute(w, todos) //第二引数の内容を渡す
+	err != nil {
+		log.Printf("failed to execute template: %v", err)
+	}
+
+	//以下の処理を別枠に移したい
+	log.Printf(r.FormValue("edit"))
+	if(r.FormValue("edit") == "test_sendvalue"){
+		log.Println("sucsess")
+		insert("Form", timeToString(time.Now()))
+	} else {
+		log.Println("no")
+	}
+
+	//invoke delete method
+	log.Printf(r.FormValue("delete"))
+	i, err := strconv.Atoi(r.FormValue("delete")) // string -> int
+	delete(i) // send delete id
+
+
+	//check input data
+	log.Println(r.FormValue("newName"))
+	log.Println(r.FormValue("newTodo"))
+	//invoke insert method
+	if (r.FormValue("add") == "add") {
+		insert(r.FormValue("newName"), r.FormValue("newTodo"))
+	}
+
+	log.Println(r.FormValue("edit"))
+	log.Println(r.FormValue("editName"))
+	log.Println(r.FormValue("editTodo"))
+	i2, err := strconv.Atoi(r.FormValue("edit"))
+	update(i2, r.FormValue("editName"), r.FormValue("editTodo"))
 }
 
 func getDB(){
@@ -103,6 +168,7 @@ func getDB(){
 			return
 		}
 
+		//初期化せずにどんどん構造体に追加してるっぽい
 		// Todo型の変数todoTmpに取得した情報を代入
 		todoTmp:= Todo {
 			ID: id,
@@ -153,7 +219,7 @@ func TestHandler(w http.ResponseWriter, r *http.Request){
 	json.NewEncoder(w).Encode(todos)
 }
 
-
+/*
 func invokeMethod() {
 
 	fmt.Println("-----一覧表示-----")
@@ -204,6 +270,7 @@ func invokeMethod() {
 	fmt.Println("\n-----処理結果-----\n")
 	read()
 }
+*/
 
 func insert(name string, todo string){
 	ins, err := db.Prepare("INSERT INTO todo(name, todo) VALUES(?,?)")
@@ -223,7 +290,7 @@ func delete(id int){
 	del.Exec(id)
 }
 
-func update(name string, todo string, id int){
+func update(id int, name string, todo string){
 	upd, err := db.Prepare("UPDATE todo SET name = ?, todo = ? WHERE id = ?")
 	if err != nil {
 		log.Println(err)
