@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"database/sql"
 	"log"
-	//"time"
+	"time"
 	"net/http"
 	"encoding/json"
+	"strconv"
 
 	"html/template"
 
@@ -31,10 +32,17 @@ if err != nil {
 defer db.Close() //defer:延期する
 */
 
+
 func main() {
 
 	getDB()
 	//log.Println(todos)//todosにDBの情報は入ってる
+
+	//time <=> string test
+	now := time.Now()
+	log.Println(now)
+	str := timeToString(now)
+	log.Println(str)
 
 	port := "8080"
 
@@ -60,6 +68,22 @@ func handleIndex(w http.ResponseWriter, r *http.Request){
 	err != nil {
 		log.Printf("failed to execute template: %v", err)
 	}
+
+//	log.Printf(r.FormValue("edit"))
+	if(r.FormValue("edit") == "test_sendvalue"){
+		log.Println("sucsess")
+		insert("Form", timeToString(time.Now()))
+	} else {
+		log.Println("no")
+	}
+
+
+	log.Printf(r.FormValue("delete"))
+	i, err := strconv.Atoi(r.FormValue("delete"))
+	delete(i)
+	//再取得 ここでやるとコピーが無限に増える
+	//getDB()
+
 }
 
 func getDB(){
@@ -226,4 +250,18 @@ func read(){
 		}
 		fmt.Println(id, name, todo)
 	}
+}
+
+
+
+
+//
+var layout = "2006-01-02 15:04:05"
+func stringToTime(str string) time.Time {
+	t, _ := time.Parse(layout, str)
+	return t
+}
+func timeToString(t time.Time) string {
+	str := t.Format(layout)
+	return str
 }

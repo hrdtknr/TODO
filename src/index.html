@@ -2,82 +2,60 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
+    <link href="css/index.css" rel="stylesheet"></link>
     <title>仮タイトル</title>
 </head>
 <body>
-<h6 id="test">{{.}}</h6> <!--全部表示-->
-<h6>{{index . 1}}</h6> <!--構造体のindex 1を表示-->
-<h6>{{(index . 5).ID}}</h6> <!-- 構造体index5のID-->
-<ul>
-  <p>■index 0の中身を表示</p>
-  <li>ID: {{(index . 0).ID}}</li>
-  <li>Name: {{(index . 0).Name}}</li>
-  <li>Todo: {{(index . 0).Todo}}</li>
-</ul>
+  <h1 class="title">TODO LIST</h1>
+  <form class="newTodo">
+    <button type="submit">
+      新規TODO追加
+    </button>
+  </form>
+  <div class="todolist">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Todo</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{range .}}
+        <tr>
+          <td>{{.ID}}</td>
+          <td>{{.Name}}</td>
+          <td>{{.Todo}}</td>
+          <td>
+            <form>
+              <button type="submit" name="edit" value="test_sendvalue">
+                編集
+              </button>
+            </form>
+          </td>
+          <td>
+            <form>
+              <button type="submit" name="delete" value="{{.ID}}">
+                削除
+              </button>
+            </form>
+          </td>
+        </tr>
+        {{end}}
+      </tbody>
+    </table>
+  </div>
 
-<ul>
-  <p>■index 1の中身を表示</p>
-  <li>ID: {{(index . 1).ID}}</li>
-  <li>Name: {{(index . 1).Name}}</li>
-  <li>Todo: {{(index . 1).Todo}}</li>
-</ul>
+  <div class="javaScriptTest">
+    <p>index.jsの内容をこの下に表示したい</p>
+    <script src="index.js"></script>
+    <h1>html内に埋め込んで動作確認してから分けてみる</h1>
+    <script>
+    </script>
+  </div>
 
-<ul>
-  <p>■index 2の中身を表示</p>
-  <li>ID: {{(index . 2).ID}}</li>
-  <li>Name: {{(index . 2).Name}}</li>
-  <li>Todo: {{(index . 2).Todo}}</li>
-</ul>
-
-
-<p>javaScriptを使ってfor文ループで繰り返し表示する</p>
-
-<p>index.jsの内容をこの下に表示したい</p>
-
-<script src="index.js"></script>
-
-<h1>html内に埋め込んで動作確認してから分けてみる</h1>
-
-<script>
-  const test = document.getElementById('test');
-  console.log(test);
-  const test2 = test.textContent;
-  console.log(test2);
-  console.log(test2[1]);
-  console.log(test2[2]);
-
-  for(var i = 0; i < 20; i++){
-    console.log(test2[i]);
-  }
-</script>
-
-<!--{{range .}}  {{end}} で要素全部だせる-->
-<ul>
-  {{range .}}
-  <li>{{.ID}} : {{.Name}}</li>
-  {{end}}
-</ul>
-
-
-<table>
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Todo</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{range .}}
-    <tr>
-      <td>{{.ID}}</td>
-      <td>{{.Name}}</td>
-      <td>{{.Todo}}</td>
-    </tr>
-    {{end}}
-  </tbody>
-
-
-</table>
 </body>
 </html>
