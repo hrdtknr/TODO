@@ -1,29 +1,9 @@
-document.write("<p>javascript test</p>");
-document.write("<h2>javascript test 2</h2>");
-
-document.write("<h2>よみこめている</h2>");
-
-/*
-document.getElementById('demo').onclick = function changeContent() {
-
-  document.getElementById('demo').innerHTML = "Help me";
-  document.getElementById('demo').style = "Color: red";
-
-}
-
-
-const button = document.querySelector('button');
-
-button.addEventListener('click', event => {
-  button.innerHTML = `Click count: ${event.detail}`;
-});
-*/
-fetch('http://localhost:8080/todoList')
+fetch('http://localhost:8080')
   .then(response => response.json())
   .then(data => console.log(data));
 
 // POST メソッドの実装の例
-async function postData(url = 'http://localhost:8080/todoList', data = {}) {
+async function postData(url = 'http://localhost:8080', data = {}) {
   // 既定のオプションには * が付いています
   const response = await fetch(url, {
     method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -41,7 +21,9 @@ async function postData(url = 'http://localhost:8080/todoList', data = {}) {
   return response.json(); // レスポンスの JSON を解析
 }
 
-postData('http://localhost:8080/todoList', { answer: 42 })
+postData('http://localhost:8080', { answer: 42 })
   .then(data => {
     console.log(data); // `data.json()` の呼び出しで解釈された JSON データ
   });
+
+console.log(data)
