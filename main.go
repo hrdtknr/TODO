@@ -4,24 +4,26 @@ import (
 	"fmt"
 	"database/sql"
 	"log"
-	"time"
+//	"time"
 	"net/http"
-//	"encoding/json"
-	"strconv"
-
+	"encoding/json"
+//	"strconv"
+	"bytes"
+	"os"
 	"html/template"
+	"io/ioutil"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
 //構造体の変数名の戦闘を大文字にしないとテンプレートファイルに読みこめない
 type Todo struct {
-	ID int
-	Name string
-	Todo string
+	ID int `json:"id"`
+	Name string `json:"name"`
+	Todo string `json:"todo"`
 }
 
-//Todo型の構造体TodoList
+//Todo型の配列TodoList
 type TodoList []Todo
 
 var todoList TodoList
@@ -33,29 +35,43 @@ if err != nil {
 }
 defer db.Close() //defer:延期する
 */
-
+const URL = "http://localhost:8080"
 
 func main() {
 
+	//DBからデータを取得して、構造体を作成
 	getDB()
 
+	//構造体をjsonに変換
+	todoList_json, _ := json.Marshal(todoList)
+
+  //totoListをjson形式でファイル出力テスト
+	os.Stdout.Write(todoList_json)
+	content := []byte(todoList_json)
+	ioutil.WriteFile("todoList.json", content, os.ModePerm)
 
 	port := "8080"
 
 	http.Handle("/", http.FileServer(http.Dir("./src")))
 	http.HandleFunc("/todoList", handleIndex) //go側でインポート設定する必要があった
 
-//	http.handleFunc("/test", handleTest)
-
-
-
 	log.Printf("listening port %s", port)
 	log.Print(http.ListenAndServe(":"+port, nil))
+
+	// HTTP json 送るテスト
+	res, err := http.Post(URL, "application/json", bytes.NewBuffer(todoList_json))
+	defer res.Body.Close()
+	if err != nil {
+			fmt.Println("[!] " + err.Error())
+	} else {
+			fmt.Println("[*] " + res.Status)
+	}
 
 	db.Close()//今はエラー出てないから大丈夫だけどここでcloseは危険な気がする
 }
 
-func handleIndex(w http.ResponseWriter, r *http.Request){
+//goのプラグイン入れて定義ジャンプ
+func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入ってて、クエリとGETを組み合わせる
 	getDB()
 	t, err := template.ParseFiles("src/index.html")
 	if err != nil {
@@ -65,35 +81,6 @@ func handleIndex(w http.ResponseWriter, r *http.Request){
 	err != nil {
 		log.Printf("failed to execute template: %v", err)
 	}
-
-	//以下の処理を別枠に移したい
-	log.Printf(r.FormValue("edit"))
-	if(r.FormValue("edit") == "test_sendvalue"){
-		log.Println("sucsess")
-//		insert("Form", timeToString(time.Now()))
-	} else {
-		log.Println("no")
-	}
-
-	//invoke delete method
-	log.Printf(r.FormValue("delete"))
-	i, err := strconv.Atoi(r.FormValue("delete")) // string -> int
-	delete(i) // send delete id
-
-
-	//check input data
-	log.Println(r.FormValue("newName"))
-	log.Println(r.FormValue("newTodo"))
-	//invoke insert method
-	if (r.FormValue("add") == "add") {
-		insert(r.FormValue("newName"), r.FormValue("newTodo"))
-	}
-
-	log.Println(r.FormValue("edit"))
-	log.Println(r.FormValue("editName"))
-	log.Println(r.FormValue("editTodo"))
-	i2, err := strconv.Atoi(r.FormValue("edit"))
-	update(i2, r.FormValue("editName"), r.FormValue("editTodo"))
 }
 
 func getDB(){
@@ -104,7 +91,7 @@ func getDB(){
 		return
 	}
 
-	//ここで仮のリスト
+	//仮のリスト
 	var todoListTmp TodoList
 
 	for rows.Next(){
@@ -115,8 +102,6 @@ func getDB(){
 			log.Println(err)
 			return
 		}
-
-		//初期化せずにどんどん構造体に追加してるっぽい
 		// Todo型の変数todoTmpに取得した情報を代入
 		todoTmp:= Todo {
 			ID: id,
@@ -124,22 +109,11 @@ func getDB(){
 			Todo: todo,
 		}
 		//配列todoListに要素を追加
-		//変数名は工夫したい(分かりにくい)
 		todoListTmp = append(todoListTmp, todoTmp)
-		//ここで上書き処理をすればいいのでは
 	}
-
 	//仮リストの中身を元リストへ代入（appendではない
 	todoList = todoListTmp
 }
-/*
-//これも動いてないかも
-func TestHandler(w http.ResponseWriter, r *http.Request){
-	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(todoList)
-}
-*/
 
 func insert(name string, todo string){
 	ins, err := db.Prepare("INSERT INTO todo(name, todo) VALUES(?,?)")
@@ -187,19 +161,3 @@ func read(){
 		fmt.Println(id, name, todo)
 	}
 }
-
-
-
-/*
-//time型<->string型
-//使わないので後で消す
-var layout = "2006-01-02 15:04:05"
-func stringToTime(str string) time.Time {
-	t, _ := time.Parse(layout, str)
-	return t
-}
-func timeToString(t time.Time) string {
-	str := t.Format(layout)
-	return str
-}
-*/
