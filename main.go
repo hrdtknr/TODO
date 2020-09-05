@@ -4,14 +4,8 @@ import (
 	"fmt"
 	"database/sql"
 	"log"
-//	"time"
 	"net/http"
 	"encoding/json"
-//	"strconv"
-	"bytes"
-	"os"
-	"html/template"
-	"io/ioutil"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -25,30 +19,17 @@ type Todo struct {
 
 //Todo型の配列TodoList
 type TodoList []Todo
-
+//グローバル変数
 var todoList TodoList
-
+//DB接続設定
 var db, err =sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
-/*
-if err != nil {
-	panic(err.Error())
-}
-defer db.Close() //defer:延期する
-*/
-const URL = "http://localhost:8080"
+
+//const URL = "http://localhost:8080"
 
 func main() {
 
 	//DBからデータを取得して、構造体を作成
 	getDB()
-
-	//構造体をjsonに変換
-	todoList_json, _ := json.Marshal(todoList)
-
-  //totoListをjson形式でファイル出力テスト
-	os.Stdout.Write(todoList_json)
-	content := []byte(todoList_json)
-	ioutil.WriteFile("todoList.json", content, os.ModePerm)
 
 	port := "8080"
 
@@ -58,29 +39,20 @@ func main() {
 	log.Printf("listening port %s", port)
 	log.Print(http.ListenAndServe(":"+port, nil))
 
-	// HTTP json 送るテスト
-	res, err := http.Post(URL, "application/json", bytes.NewBuffer(todoList_json))
-	defer res.Body.Close()
-	if err != nil {
-			fmt.Println("[!] " + err.Error())
-	} else {
-			fmt.Println("[*] " + res.Status)
-	}
-
 	db.Close()//今はエラー出てないから大丈夫だけどここでcloseは危険な気がする
 }
 
 //goのプラグイン入れて定義ジャンプ
+//ResponseWriteとRequestの中身は調べる
 func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入ってて、クエリとGETを組み合わせる
 	getDB()
-	t, err := template.ParseFiles("src/index.html")
+	res, err := json.Marshal(todoList) //dbからの情報が入ったtodoListをjson形式にして変数resへ
 	if err != nil {
-		log.Fatalf("src error: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 	}
-	if err := t.Execute(w, todoList) //第二引数の内容を渡す
-	err != nil {
-		log.Printf("failed to execute template: %v", err)
-	}
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(res)
 }
 
 func getDB(){
@@ -113,6 +85,7 @@ func getDB(){
 	}
 	//仮リストの中身を元リストへ代入（appendではない
 	todoList = todoListTmp
+	//処理形態が変わったから、この辺の処理いじれるかも
 }
 
 func insert(name string, todo string){

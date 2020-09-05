@@ -1,5 +1,5 @@
 fetch('http://localhost:8080')
-  .then(response => response.json())
+  .then(response => response.data.json())
   .then(data => console.log(data));
 
 // POST メソッドの実装の例
@@ -25,5 +25,3 @@ postData('http://localhost:8080', { answer: 42 })
   .then(data => {
     console.log(data); // `data.json()` の呼び出しで解釈された JSON データ
   });
-
-console.log(data)
