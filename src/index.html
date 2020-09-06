@@ -1,81 +1,11 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <link href="css/index.css" rel="stylesheet"></link>
-    <title>仮タイトル</title>
+  <meta charset="utf-8">
+  <title>sample</title>
 </head>
-
 <body>
-  <div>
-    <h1 class="title">TODO LIST</h1>
-    <button>
-      <a href="http://localhost:8080/todoList">再読み込み</a>
-    </button>
-  </div>
-
-  <div class="newTodo">
-    <p>新規TODO追加</p>
-    <form>
-      <input type="text" name="newName" placeholder="Name">
-      <input type="text" name="newTodo" placeholder="Todo">
-      <button type="submit" name="add" value="add">
-        追加
-      </button>
-    </form>
-  </div>
-
-  <div class="todolist">
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Todo</th>
-          <th>Edit</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        {{range .}}
-        <tr>
-          <td>{{.ID}}</td>
-          <td>{{.Name}}</td>
-          <td>{{.Todo}}</td>
-          <td>
-            <form>
-              <input type="text" name="editName" placeholder="editName">
-              <input type="text" name="editTodo" placeholder="editTodo">
-              <button type="submit" name="edit" value="{{.ID}}"><!--この行のオブジェクトを送りたい {{.}}de ok-->
-                編集
-              </button>
-            </form>
-          </td>
-          <td>
-            <form>
-              <button type="submit" name="delete" value="{{.ID}}"><!--send delete id-->
-                削除
-              </button>
-            </form>
-          </td>
-        </tr>
-        {{end}}
-      </tbody>
-    </table>
-  </div>
-
-  <div class="javaScriptTest">
-    <p>index.jsの内容をこの下に表示したい</p>
-    <script src="index.js"></script>
-    <h1>html内に埋め込んで動作確認してから分けてみる</h1>
-    <script>
-
-    </script>
-  </div>
-
-  <div id="demo">ここをクリック</div>
-
-  <button>click</button>
-
-</body>
+    <script language="javascript" type="text/javascript" src="index.js">
+   </script>
+  </body>
 </html>
