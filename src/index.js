@@ -1,27 +1,25 @@
-fetch('http://localhost:8080')
-  .then(response => response.data.json())
-  .then(data => console.log(data));
 
-// POST メソッドの実装の例
-async function postData(url = 'http://localhost:8080', data = {}) {
-  // 既定のオプションには * が付いています
-  const response = await fetch(url, {
-    method: 'POST', // *GET, POST, PUT, DELETE, etc.
-    mode: 'cors', // no-cors, *cors, same-origin
-    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-    credentials: 'same-origin', // include, *same-origin, omit
-    headers: {
-      'Content-Type': 'application/json'
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    redirect: 'follow', // manual, *follow, error
-    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-    body: JSON.stringify(data) // 本文のデータ型は "Content-Type" ヘッダーと一致する必要があります
-  })
-  return response.json(); // レスポンスの JSON を解析
-}
+const DATA_URL = 'http://localhost:8080/todoList';
 
-postData('http://localhost:8080', { answer: 42 })
-  .then(data => {
-    console.log(data); // `data.json()` の呼び出しで解釈された JSON データ
-  });
+fetch(DATA_URL)
+ .then(function(response){
+  return response.json();
+ })
+ .then(function(jsonData){
+  console.log(jsonData);
+  //効率的な書き方がありそう
+  document.write('<table>');
+  document.write('<thead>');
+  document.write('<tr>');
+  document.write('<th>ID</th>');
+  document.write('<th>NAME</th>');
+  document.write('<th>TODO</th>');
+  document.write('</tr>');
+  document.write('</thead>');
+  document.write('<tbody>');
+  for(var i = 0; i < jsonData.length; i++){
+    document.write(`<tr><td>${jsonData[i].id}</td><td>${jsonData[i].name}</td><td>${jsonData[i].todo}</td></tr>`);
+  }
+  document.write('</tbody>');
+  document.write('</table>');
+ });
