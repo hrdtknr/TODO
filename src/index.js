@@ -27,7 +27,7 @@ fetch(DATA_URL)
 
     //入力をobjectに
     var obj = {
-      id: 99,
+      id: 0,
       name: inputName,
       todo: inputTodo
     }
@@ -81,7 +81,6 @@ function funcEditButton(i){
 
   console.log("json前:"+obj);
 
-
   if (editName == "" && editTodo == ""){
     console.log("empty");
   } else {
@@ -89,6 +88,35 @@ function funcEditButton(i){
     //console.log("json後:"+JSON.stringify(obj))
   }
 }
+
+//削除行のidが渡ってればOK
+function funcDelete(i){
+  //testのデータが渡っているかの確認
+  
+  console.log("funcDelte");
+  console.log("funcDelete json:"+i);
+
+  var obj = {
+    id: parseInt(i, 10),
+    name: "noname",
+    todo: "notodo"
+  }
+
+  const body = JSON.stringify(obj);
+  console.log("funcDelte body:"+body);
+
+  const method = "Delete";
+  const headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  };
+  //第2引数は method, headers, body の変数名で送る必要がある
+  fetch(DATA_URL, {method, headers, body})
+  .then((res)=> res.json())
+  .then(console.log).catch(console.error);
+
+}
+
 
 //一覧表示処理
 function generate_table() {
@@ -189,7 +217,8 @@ function generate_table() {
     var cell5 = document.createElement("td");
     var cell5Form = document.createElement("form");
     var cell5Input = document.createElement("input");
-    cell5Input.setAttribute("type", "submit");
+    cell5Input.setAttribute("type", "button");
+    cell5Input.setAttribute("onclick", "funcDelete("+todoList[i].id+")");
     cell5Input.setAttribute("value","削除");
     cell5Form.appendChild(cell5Input);
     cell5.appendChild(cell5Form);

@@ -65,7 +65,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入
 			json.NewDecoder(r.Body).Decode(&todoDecode)
 			fmt.Println(todoDecode)
 
-			if(todoDecode.ID == 99) {
+			if(todoDecode.ID == 0) {
 				// ID=99のときはinsert(test)
 				fmt.Println("isnert")
 				insert(todoDecode.Name, todoDecode.Todo)
@@ -76,6 +76,10 @@ func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入
 			}
 		case http.MethodDelete:
 			fmt.Println("delete")
+			var todoDecode Todo //構造体Todo型の変数
+			json.NewDecoder(r.Body).Decode(&todoDecode)
+			fmt.Println(todoDecode)
+			delete(todoDecode.ID)
 	}
 }
 
