@@ -65,13 +65,15 @@ func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入
 			//fmt.Println(r.Body)
 			//NewDecoderはr.BodyのデータをDecode()の引数内の変数に格納する（パースする）
 			json.NewDecoder(r.Body).Decode(&todoDecode)
-			//fmt.Println(todoDecode)
+			fmt.Println(todoDecode)
 
 			if(todoDecode.ID == 0) {
 				// ID=0のときはinsert
+				fmt.Println("isnert")
 				insert(todoDecode.Name, todoDecode.Todo)
 			} else {
 				// それ以外はupdate
+				fmt.Println("update")
 				update(todoDecode.ID, todoDecode.Name, todoDecode.Todo)
 			}
 		case http.MethodDelete:
