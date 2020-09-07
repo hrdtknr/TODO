@@ -20,8 +20,7 @@ fetch(DATA_URL)
 
  });
 
- var test;//func1内で作成したjson形式のデータを格納
- function func1() {
+ function funcInsert() {
     var inputName = document.getElementById("newName").value;
     var inputTodo = document.getElementById("newTodo").value;
     //console.log(inputName);console.log(inputTodo);//test出力
@@ -34,33 +33,55 @@ fetch(DATA_URL)
     }
 
     //objectをjson形式に変換
-    var jsonInsert = JSON.stringify(obj);
-
-    // json形式のテスト出力
-    //console.log(jsonInsert);
+    var json = JSON.stringify(obj);
 
     // web画面に入力値をjson形式で表示
-    document.getElementById("out_test").innerHTML = jsonInsert;
+    document.getElementById("out_test").innerHTML = json;
 
-    //ここから先にfetch機能でgoへ送る機能が欲しい
-    funcPost(jsonInsert);
+    // fetch機能でgoへ送る
+    funcPost(json);
  }
 
-//const DATA_URL2 = 'http://localhost:8080/';
-
-function funcPost(jsonInsert){
+function funcPost(json){
   //testのデータが渡っているかの確認
-  console.log("funcPost jsonInsert");
-  console.log(jsonInsert);
+  //console.log("funcPost jsonInsert");
+  //console.log(json);
 
-  const method = "POST";
+  const body = json;
+  const method = "Post";
   const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
   };
-  fetch(DATA_URL, {method, headers, jsonInsert})
+  //第2引数は method, headers, body の変数名で送る必要がある
+  fetch(DATA_URL, {method, headers, body})
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
+}
+
+//ボタン押したときにテキストボックスの中身を取得する仕組み
+function funcEditButton(){
+  console.log("fuincEditButton");
+  //console.log(id);console.log(name);console.log(todo);
+
+  var editId = document.getElementById("editId").value;
+//  console.log(editId);
+  var editName = document.getElementById("editName").value;
+//  console.log(editName);
+  var editTodo = document.getElementById("editTodo").value;
+
+  var obj = {
+    id: editId,
+    name: editName,
+    todo: editTodo
+  }
+  console.log(obj);
+  if (editName == "" && editTodo == ""){
+    console.log("empty");
+  } else {
+    var json = JSON.stringify(obj);
+    funcPost(json);
+  }
 }
 
 //一覧表示処理
@@ -78,14 +99,27 @@ function generate_table() {
   var cellText1H = document.createTextNode("ID");
   cell1H.appendChild(cellText1H);
   rowH.appendChild(cell1H);
+
   var cell2H = document.createElement("td");
   var cellText2H = document.createTextNode("NAME");
   cell2H.appendChild(cellText2H);
   rowH.appendChild(cell2H);
+
   var cell3H = document.createElement("td");
   var cellText3H = document.createTextNode("TODO");
   cell3H.appendChild(cellText3H);
   rowH.appendChild(cell3H);
+
+  var cell4H = document.createElement("td");
+  var cellText4H = document.createTextNode("EDIT");
+  cell4H.appendChild(cellText4H);
+  rowH.appendChild(cell4H);
+
+  var cell5H = document.createElement("td");
+  var cellText5H = document.createTextNode("DELETE");
+  cell5H.appendChild(cellText5H);
+  rowH.appendChild(cell5H);
+
   tblHead.appendChild(rowH);
   tbl.appendChild(tblHead);//<thead>を<tbody>へ入れる
   // <thead>作成処理ここまで
@@ -111,6 +145,47 @@ function generate_table() {
     var cellText3 = document.createTextNode(todoList[i].todo);
     cell3.appendChild(cellText3);
     row.appendChild(cell3);
+    // edit列
+    var cell4 = document.createElement("td");
+    var cell4Form = document.createElement("form");
+
+    var cell4InputId = document.createElement("input");
+    cell4InputId.setAttribute("type", "hidden");
+    cell4InputId.setAttribute("id", "editId");
+    cell4InputId.setAttribute("value", todoList[i].id);
+
+    var cell4InputName = document.createElement("input");
+    cell4InputName.setAttribute("type", "text");
+    cell4InputName.setAttribute("id", "editName");
+    cell4InputName.setAttribute("placeholder", todoList[i].name);
+
+    var cell4InputTodo = document.createElement("input");
+    cell4InputTodo.setAttribute("type", "text");
+    cell4InputTodo.setAttribute("id", "editTodo");
+    cell4InputTodo.setAttribute("placeholder", todoList[i].todo);
+
+    var cell4InputButton = document.createElement("input");
+    cell4InputButton.setAttribute("type", "button");
+    cell4InputButton.setAttribute("onclick", "funcEditButton()");
+    cell4InputButton.setAttribute("value", "更新");
+
+
+    cell4Form.appendChild(cell4InputId);
+    cell4Form.appendChild(cell4InputName);
+    cell4Form.appendChild(cell4InputTodo);
+    cell4Form.appendChild(cell4InputButton);
+
+    cell4.appendChild(cell4Form);
+    row.appendChild(cell4);
+    // delete列
+    var cell5 = document.createElement("td");
+    var cell5Form = document.createElement("form");
+    var cell5Input = document.createElement("input");
+    cell5Input.setAttribute("type", "submit");
+    cell5Input.setAttribute("value","削除");
+    cell5Form.appendChild(cell5Input);
+    cell5.appendChild(cell5Form);
+    row.appendChild(cell5);
     // add the row to the end of the table body
     tblBody.appendChild(row);
   }
@@ -121,3 +196,4 @@ function generate_table() {
   // sets the border attribute of tbl to 2;
   tbl.setAttribute("border", "3");
 }
+

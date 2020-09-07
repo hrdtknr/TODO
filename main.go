@@ -46,21 +46,37 @@ func main() {
 //goのプラグイン入れて定義ジャンプ
 //ResponseWriteとRequestの中身は調べる
 func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入ってて、クエリとGETを組み合わせる
-	getDB()
-	res, err := json.Marshal(todoList) //dbからの情報が入ったtodoListをjson形式にして変数resへ
-	if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(res)
 
-	var todoDecode Todo //構造体Todo型の変数
-	//var todoDecode TodoList //構造体Todo型の変数(配列はこれで受け取れる）
-	fmt.Println(r.Body)
-	//NewDecoderはr.BodyのデータをDecode()の引数内の変数に格納する（パースする）
-	fmt.Println(json.NewDecoder(r.Body).Decode(&todoDecode))
-	fmt.Println(todoDecode)
+	switch r.Method {
+		case http.MethodGet:
+			//fmt.Println("methodget")
+			getDB()
+			res, err := json.Marshal(todoList) //dbからの情報が入ったtodoListをjson形式にして変数resへ
+			if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(res)
+		case http.MethodPost:
+			//fmt.Println("post")
+			var todoDecode Todo //構造体Todo型の変数
+			//var todoDecode TodoList //構造体Todo型の変数(配列はこれで受け取れる）
+			//fmt.Println(r.Body)
+			//NewDecoderはr.BodyのデータをDecode()の引数内の変数に格納する（パースする）
+			json.NewDecoder(r.Body).Decode(&todoDecode)
+			//fmt.Println(todoDecode)
+
+			if(todoDecode.ID == 0) {
+				// ID=0のときはinsert
+				insert(todoDecode.Name, todoDecode.Todo)
+			} else {
+				// それ以外はupdate
+				update(todoDecode.ID, todoDecode.Name, todoDecode.Todo)
+			}
+		case http.MethodDelete:
+			fmt.Println("delete")
+	}
 }
 
 func getDB(){
