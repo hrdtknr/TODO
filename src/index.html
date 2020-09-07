@@ -6,15 +6,16 @@
 </head>
 <body>
 
-  <div class="newTodo">
+  <div>
     <p>新規TODO追加</p>
-    <form>
+    <form id="newTodoForm"><!--fetchで送信するためにid設定してみた(newTodoだとinputと被って入力フォームが機能しなくなる)-->
       <input type="text" id="newName" placeholder="Name">
       <input type="text" id="newTodo" placeholder="Todo">
       <input type="button" onclick="func1()" value="send">
     </form>
     <!--divの外にあるとinputの入力結果の反映できないっぽい-->
-    <h1 id="out_test"></h1>
+    <p>この下に入力値をjsonにしたものが表示される</p>
+    <p id="out_test"></p>
   </div>
 
   <form>

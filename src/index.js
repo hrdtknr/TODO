@@ -47,6 +47,7 @@ fetch(DATA_URL)
     console.log(`test json out:${test}`);
 
     //ここから先にfetch機能でgoへ送る機能が欲しい
+    funcPost();
  }
 
 //一覧表示処理
@@ -106,37 +107,22 @@ function generate_table() {
   body.appendChild(tbl);
   // sets the border attribute of tbl to 2;
   tbl.setAttribute("border", "3");
-
-  /*
-  <div>
-    <input type="button" value="一覧表示" onclick="generate_table()">
-  </div>
-  でボタンの処理してたけど、fetch内で関数呼び出してる
-  */
 }
 
 
 const DATA_URL2 = 'http://localhost:8080/';
-function test(){
-console.log("test");
-  /*
-  fetch(DATA_URL2)
-  .then(function(response){
-    return response.json();
-  })
-  .then(function(jsonData){
-    console.log(DATA_URL2);
-    console.log("out jsonData");
-    console.log(jsonData);
 
-    todoList = jsonData;
-    //todoList = JSON.parse(jsonData);//これはエラーがでる
-    console.log("out todoList");
-    console.log(todoList);
-
-    //table作成
-    //generate_table();
-
-  });
-  */
+function funcPost(){
+  const obj = test;//testはfunc1でテキストボックスの入力をjsonに変換したデータ
+  console.log("funcPost");
+  console.log(obj);//testのデータが渡っているかの確認
+  const method = "POST";
+  const body = JSON.stringify(obj);
+  const headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  };
+  fetch(DATA_URL2, {method, headers, body})
+  .then((res)=> res.json())
+  .then(console.log).catch(console.error);
 }
