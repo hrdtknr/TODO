@@ -62,13 +62,11 @@ func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入
 		case http.MethodPost:
 			//fmt.Println("post")
 			var todoDecode Todo //構造体Todo型の変数
-			//var todoDecode TodoList //構造体Todo型の変数(配列はこれで受け取れる）
-			//NewDecoderはr.BodyのデータをDecode()の引数内の変数に格納する（パースする）
 			json.NewDecoder(r.Body).Decode(&todoDecode)
 			fmt.Println(todoDecode)
 
-			if(todoDecode.ID == 0) {
-				// ID=0のときはinsert
+			if(todoDecode.ID == 99) {
+				// ID=99のときはinsert(test)
 				fmt.Println("isnert")
 				insert(todoDecode.Name, todoDecode.Todo)
 			} else {
