@@ -5,7 +5,23 @@
   <title>sample</title>
 </head>
 <body>
-    <script language="javascript" type="text/javascript" src="index.js">
-   </script>
-  </body>
+
+  <div class="newTodo">
+    <p>新規TODO追加</p>
+    <form>
+      <input type="text" id="newName" placeholder="Name">
+      <input type="text" id="newTodo" placeholder="Todo">
+      <input type="button" onclick="func1()" value="send">
+    </form>
+    <!--divの外にあるとinputの入力結果の反映できないっぽい-->
+    <h1 id="out_test"></h1>
+  </div>
+
+  <form>
+    <input type="button" onclick="test()" value="test">
+  </form>
+  
+  <script language="javascript" type="text/javascript" src="index.js">
+  </script>
+</body>
 </html>
