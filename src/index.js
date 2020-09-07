@@ -45,9 +45,10 @@ fetch(DATA_URL)
 function funcPost(json){
   //testのデータが渡っているかの確認
   //console.log("funcPost jsonInsert");
-  //console.log(json);
+  console.log(json);
 
   const body = json;
+  console.log(body);
   const method = "Post";
   const headers = {
     'Accept': 'application/json',
@@ -62,32 +63,21 @@ function funcPost(json){
 //ボタン押したときにテキストボックスの中身を取得する仕組み
 function funcEditButton(i){
   console.log("fuincEditButton");
-
-  //console.log(id);console.log(name);console.log(todo);
-  //console.log(i);
-  //i++;
-  //console.log(i);
   var editId = document.getElementById("editId"+i).textContent;
-  console.log(editId);
-  
-
-
-  var editName = document.getElementById("editName"+i).textContent;
-  console.log(editName);
-  var editTodo = document.getElementById("editTodo"+i).textContent;
-  console.log(editTodo);
+  var editName = document.getElementById("editName"+i).value;
+  var editTodo = document.getElementById("editTodo"+i).value;
 
   var obj = {
     id: editId,
     name: editName,
     todo: editTodo
   }
+
   console.log(obj);
   if (editName == "" && editTodo == ""){
     console.log("empty");
   } else {
-    var json = JSON.stringify(obj);
-    funcPost(json);
+    funcPost(JSON.stringify(obj));
   }
 }
 
@@ -140,7 +130,7 @@ function generate_table() {
     // id列
     var cell1 = document.createElement("td");
     var cellText1 = document.createTextNode(todoList[i].id);
-    cell1.setAttribute("id", "editId"+i);
+    cell1.setAttribute("id", "editId"+todoList[i].id);
     cell1.setAttribute("value", todoList[i].id);
     cell1.appendChild(cellText1);
     row.appendChild(cell1);
@@ -165,12 +155,12 @@ function generate_table() {
 
     var cell4InputName = document.createElement("input");
     cell4InputName.setAttribute("type", "text");
-    cell4InputName.setAttribute("id", "editName"+i);
+    cell4InputName.setAttribute("id", "editName"+todoList[i].id);//htmlのidにDBのIDを付与
     cell4InputName.setAttribute("placeholder", todoList[i].name);
 
     var cell4InputTodo = document.createElement("input");
     cell4InputTodo.setAttribute("type", "text");
-    cell4InputTodo.setAttribute("id", "editTodo"+i);
+    cell4InputTodo.setAttribute("id", "editTodo"+todoList[i].id);
     cell4InputTodo.setAttribute("placeholder", todoList[i].todo);
 
     var cell4InputButton = document.createElement("input");
