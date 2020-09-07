@@ -3,92 +3,85 @@ var todoList;
 const DATA_URL = 'http://localhost:8080/todoList';
 
 fetch(DATA_URL)
- .then(function(response){
-  return response.json();
- })
+  .then(function(response){
+    return response.json();
+  })
  .then(function(jsonData){
-   //console.log("out jsonData");
-   //console.log(jsonData);
-
    todoList = jsonData;
-   //todoList = JSON.parse(jsonData);//これはエラーがでる
-   //console.log("out todoList");
-   //console.log(todoList);
-
    //table作成
    generate_table();
+  });
 
- });
-
- function funcInsert() {
-    var inputName = document.getElementById("newName").value;
-    var inputTodo = document.getElementById("newTodo").value;
-    //console.log(inputName);console.log(inputTodo);//test出力
-
-    //入力をobjectに
-    var obj = {
-      id: 99,
-      name: inputName,
-      todo: inputTodo
-    }
-
-    //objectをjson形式に変換
-    var json = JSON.stringify(obj);
-
-    // web画面に入力値をjson形式で表示
-    document.getElementById("out_test").innerHTML = json;
-
-    // fetch機能でgoへ送る
-    funcPost(json);
- }
-
-function funcPost(json){
-  //testのデータが渡っているかの確認
-  console.log("funcPost");
-  console.log("funcPost json:"+json);
-
-  const body = json;
-  console.log("funcPost body:"+body);
-
+function funcInsert() {
+  var obj = {
+    id: 0,
+    name: document.getElementById("newName").value,
+    todo: document.getElementById("newTodo").value
+  }
   const method = "Post";
   const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
   };
+  const body = JSON.stringify(obj);
   //第2引数は method, headers, body の変数名で送る必要がある
   fetch(DATA_URL, {method, headers, body})
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
 
+  location.reload();
 }
 
 //ボタン押したときにテキストボックスの中身を取得する仕組み
-function funcEditButton(i){
-  console.log("funcEditButton");
-  var editId = document.getElementById("editId"+i).textContent;
-  var editName = document.getElementById("editName"+i).value;
-  var editTodo = document.getElementById("editTodo"+i).value;
-
-  console.log(editId);
-  console.log(editName);
-  console.log(editTodo);
-  //editIdToInt = parseInt(editId, 10);
+function funcUpdate(i){
   var obj = {
-    id: parseInt(editId, 10),
-    name: editName,
-    todo: editTodo
+    id: parseInt(document.getElementById("editId"+i).textContent, 10),
+    name: document.getElementById("editName"+i).value,
+    todo: document.getElementById("editTodo"+i).value
   }
 
-  console.log("json前:"+obj);
-
-
-  if (editName == "" && editTodo == ""){
-    console.log("empty");
-  } else {
-    funcPost(JSON.stringify(obj));
-    //console.log("json後:"+JSON.stringify(obj))
+  //空文字で上書きしないための処理
+  if (obj.name == "") {
+    obj.name = document.getElementById("nameForBlank"+i).textContent;
   }
+  if (obj.todo == "" ) {
+    obj.todo = document.getElementById("todoForBlank"+i).textContent;
+  }
+
+  const method = "Put";
+  const headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  };
+  const body = JSON.stringify(obj);
+  fetch(DATA_URL, {method, headers, body})
+  .then((res)=> res.json())
+  .then(console.log).catch(console.error);
+
+  location.reload();
 }
+
+//削除行のidが渡ってればOK
+function funcDelete(i){
+  var obj = {
+    id: parseInt(i, 10),
+    name: "noname",
+    todo: "notodo"
+  }
+
+  const method = "Delete";
+  const headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  };
+  const body = JSON.stringify(obj);
+  fetch(DATA_URL, {method, headers, body})
+  .then((res)=> res.json())
+  .then(console.log).catch(console.error);
+
+  location.reload();
+}
+
 
 //一覧表示処理
 function generate_table() {
@@ -146,50 +139,42 @@ function generate_table() {
     // name列
     var cell2 = document.createElement("td");
     var cellText2 = document.createTextNode(todoList[i].name);
+    cell2.setAttribute("id", "nameForBlank"+todoList[i].id);
     cell2.appendChild(cellText2);
     row.appendChild(cell2);
     // todo列
     var cell3 = document.createElement("td");
     var cellText3 = document.createTextNode(todoList[i].todo);
+    cell3.setAttribute("id", "todoForBlank"+todoList[i].id);
     cell3.appendChild(cellText3);
     row.appendChild(cell3);
     // edit列
     var cell4 = document.createElement("td");
     var cell4Form = document.createElement("form");
-
-    //var cell4InputId = document.createElement("input");
-    //cell4InputId.setAttribute("type", "text");
-    //cell4InputId.setAttribute("id", "editId");
-    //cell4InputId.setAttribute("value", todoList[i].id);
-
     var cell4InputName = document.createElement("input");
     cell4InputName.setAttribute("type", "text");
     cell4InputName.setAttribute("id", "editName"+todoList[i].id);//htmlのidにDBのIDを付与
     cell4InputName.setAttribute("placeholder", todoList[i].name);
-
     var cell4InputTodo = document.createElement("input");
     cell4InputTodo.setAttribute("type", "text");
     cell4InputTodo.setAttribute("id", "editTodo"+todoList[i].id);
     cell4InputTodo.setAttribute("placeholder", todoList[i].todo);
-
     var cell4InputButton = document.createElement("input");
     cell4InputButton.setAttribute("type", "button");
-    cell4InputButton.setAttribute("onclick", "funcEditButton("+todoList[i].id+")");
+    cell4InputButton.setAttribute("onclick", "funcUpdate("+todoList[i].id+")");
     cell4InputButton.setAttribute("value", "更新");
-
-
     //cell4Form.appendChild(cell4InputId);
     cell4Form.appendChild(cell4InputName);
     cell4Form.appendChild(cell4InputTodo);
     cell4Form.appendChild(cell4InputButton);
-
     cell4.appendChild(cell4Form);
     row.appendChild(cell4);
     // delete列
     var cell5 = document.createElement("td");
     var cell5Form = document.createElement("form");
     var cell5Input = document.createElement("input");
-    cell5Input.setAttribute("type", "submit");
+    cell5Input.setAttribute("type", "button");
+    cell5Input.setAttribute("onclick", "funcDelete("+todoList[i].id+")");
     cell5Input.setAttribute("value","削除");
     cell5Form.appendChild(cell5Input);
     cell5.appendChild(cell5Form);

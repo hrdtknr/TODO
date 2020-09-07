@@ -46,10 +46,10 @@ func main() {
 //goのプラグイン入れて定義ジャンプ
 //ResponseWriteとRequestの中身は調べる
 func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入ってて、クエリとGETを組み合わせる
-
+	var todoDecode Todo //構造体Todo型の変数
 	switch r.Method {
 		case http.MethodGet:
-			//fmt.Println("methodget")
+			fmt.Println("methodget")
 			getDB()
 			res, err := json.Marshal(todoList) //dbからの情報が入ったtodoListをjson形式にして変数resへ
 			if err != nil {
@@ -58,24 +58,20 @@ func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入
 			}
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(res)
-
 		case http.MethodPost:
-			//fmt.Println("post")
-			var todoDecode Todo //構造体Todo型の変数
+			fmt.Println("post/insert")
+			json.NewDecoder(r.Body).Decode(&todoDecode)
+			//fmt.Println(todoDecode)
+			insert(todoDecode.Name, todoDecode.Todo)
+		case http.MethodDelete:
+			fmt.Println("delete/delete")
+			json.NewDecoder(r.Body).Decode(&todoDecode)
+			delete(todoDecode.ID)
+		case http.MethodPut:
+			fmt.Println("put/update")
 			json.NewDecoder(r.Body).Decode(&todoDecode)
 			fmt.Println(todoDecode)
-
-			if(todoDecode.ID == 99) {
-				// ID=99のときはinsert(test)
-				fmt.Println("isnert")
-				insert(todoDecode.Name, todoDecode.Todo)
-			} else {
-				// それ以外はupdate
-				fmt.Println("update")
-				update(todoDecode.ID, todoDecode.Name, todoDecode.Todo)
-			}
-		case http.MethodDelete:
-			fmt.Println("delete")
+			update(todoDecode.ID, todoDecode.Name, todoDecode.Todo)
 	}
 }
 
@@ -89,7 +85,6 @@ func getDB(){
 
 	//仮のリスト
 	var todoListTmp TodoList
-
 	for rows.Next(){
 		var id int
 		var name string
@@ -109,7 +104,6 @@ func getDB(){
 	}
 	//仮リストの中身を元リストへ代入（appendではない
 	todoList = todoListTmp
-	//処理形態が変わったから、この辺の処理いじれるかも
 }
 
 func insert(name string, todo string){
