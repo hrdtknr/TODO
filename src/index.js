@@ -114,3 +114,29 @@ function generate_table() {
   でボタンの処理してたけど、fetch内で関数呼び出してる
   */
 }
+
+
+const DATA_URL2 = 'http://localhost:8080/';
+function test(){
+console.log("test");
+  /*
+  fetch(DATA_URL2)
+  .then(function(response){
+    return response.json();
+  })
+  .then(function(jsonData){
+    console.log(DATA_URL2);
+    console.log("out jsonData");
+    console.log(jsonData);
+
+    todoList = jsonData;
+    //todoList = JSON.parse(jsonData);//これはエラーがでる
+    console.log("out todoList");
+    console.log(todoList);
+
+    //table作成
+    //generate_table();
+
+  });
+  */
+}
