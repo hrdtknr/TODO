@@ -55,7 +55,9 @@ func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入
 	w.Write(res)
 
 	var todoDecode Todo //構造体Todo型の変数
+	//var todoDecode TodoList //構造体Todo型の変数(配列はこれで受け取れる）
 	fmt.Println(r.Body)
+	//NewDecoderはr.BodyのデータをDecode()の引数内の変数に格納する（パースする）
 	fmt.Println(json.NewDecoder(r.Body).Decode(&todoDecode))
 	fmt.Println(todoDecode)
 }

@@ -47,6 +47,7 @@ fetch(DATA_URL)
     console.log(`test json out:${test}`);
 
     //ここから先にfetch機能でgoへ送る機能が欲しい
+    funcPost();
  }
 
 //一覧表示処理
@@ -106,52 +107,24 @@ function generate_table() {
   body.appendChild(tbl);
   // sets the border attribute of tbl to 2;
   tbl.setAttribute("border", "3");
-
-  /*
-  <div>
-    <input type="button" value="一覧表示" onclick="generate_table()">
-  </div>
-  でボタンの処理してたけど、fetch内で関数呼び出してる
-  */
 }
 
 
 const DATA_URL2 = 'http://localhost:8080/';
-/*
-function test(){
-console.log("test");
 
-  fetch(DATA_URL2)
-  .then(function(response){
-    return response.json();
-  })
-  .then(function(jsonData){
-    console.log(DATA_URL2);
-    console.log("out jsonData");
-    console.log(jsonData);
-
-    todoList = jsonData;
-    //todoList = JSON.parse(jsonData);//これはエラーがでる
-    console.log("out todoList");
-    console.log(todoList);
-
-    //table作成
-    //generate_table();
-
-  });
-
+function funcPost(){
+  //const obj = {"id":9,"name":"へんしゅう","todo":"てすと"};
+  //const obj = [{"id":9,"name":"へんしゅう","todo":"てすと"},{"id":14,"name":"さいよみこみしないと","todo":"update反映されない"},{"id":28,"name":"名前 その27","todo":"TODO その27"},{"id":31,"name":"名前 その30","todo":"TODO その30"},{"id":32,"name":"名前 その31","todo":"TODO その31"},{"id":34,"name":"名前 その33","todo":"TODO その33"},{"id":36,"name":"名前 その35","todo":"TODO その35"},{"id":37,"name":"名前 その36","todo":"TODO その36"},{"id":38,"name":"名前 その37","todo":"TODO その37"},{"id":41,"name":"名前 その40","todo":"TODO その40"},{"id":42,"name":"名前だけ更新","todo":""},{"id":44,"name":"","todo":"todoだけ更新"},{"id":46,"name":"変更がない場合","todo":"既存の値を送信"},{"id":47,"name":"名前 その46","todo":"TODO その46"},{"id":49,"name":"new","todo":"todo"},{"id":52,"name":"追加","todo":"機能"},{"id":53,"name":"","todo":""},{"id":55,"name":"gwsrgae","todo":"rtretj"}];
+  const obj = test;
+  console.log("funcPost");
+  console.log(obj);
+  const method = "POST";
+  const body = JSON.stringify(obj);
+  const headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  };
+  fetch(DATA_URL2, {method, headers, body})
+  .then((res)=> res.json())
+  .then(console.log).catch(console.error);
 }
-*/
-
-
-const obj = {"id":9,"name":"へんしゅう","todo":"てすと"};
-console.log(obj);
-const method = "POST";
-const body = JSON.stringify(obj);
-const headers = {
-  'Accept': 'application/json',
-  'Content-Type': 'application/json'
-};
-fetch(DATA_URL, {method, headers, body})
-.then((res)=> res.json())
-.then(console.log).catch(console.error);
