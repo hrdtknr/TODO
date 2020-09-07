@@ -44,24 +44,52 @@ fetch(DATA_URL)
 
     //ここから先にfetch機能でgoへ送る機能が欲しい
     funcPost(jsonInsert);
- }
 
-//const DATA_URL2 = 'http://localhost:8080/';
+    //下でtable にid付与して、ここでid指定で削除、そのあと再読み込み？
+    //document.getElementById()
+    //違う方法
+    
+    generate_table();
+ }
 
 function funcPost(jsonInsert){
   //testのデータが渡っているかの確認
   console.log("funcPost jsonInsert");
   console.log(jsonInsert);
 
-  const method = "POST";
+  const body = jsonInsert;
+  const method = "Post";
   const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
   };
-  fetch(DATA_URL, {method, headers, jsonInsert})
+  //第2引数は method, headers, body の変数名で送る必要がある
+  fetch(DATA_URL, {method, headers, body})
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //一覧表示処理
 function generate_table() {
