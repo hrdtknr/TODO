@@ -7,13 +7,13 @@ fetch(DATA_URL)
   return response.json();
  })
  .then(function(jsonData){
-   console.log("out jsonData");
-   console.log(jsonData);
+   //console.log("out jsonData");
+   //console.log(jsonData);
 
    todoList = jsonData;
    //todoList = JSON.parse(jsonData);//これはエラーがでる
-   console.log("out todoList");
-   console.log(todoList);
+   //console.log("out todoList");
+   //console.log(todoList);
 
    //table作成
    generate_table();
@@ -27,7 +27,7 @@ fetch(DATA_URL)
 
     //入力をobjectに
     var obj = {
-      id: null,
+      id: 99,
       name: inputName,
       todo: inputTodo
     }
@@ -44,11 +44,12 @@ fetch(DATA_URL)
 
 function funcPost(json){
   //testのデータが渡っているかの確認
-  //console.log("funcPost jsonInsert");
-  console.log(json);
+  console.log("funcPost");
+  console.log("funcPost json:"+json);
 
   const body = json;
-  console.log(body);
+  console.log("funcPost body:"+body);
+
   const method = "Post";
   const headers = {
     'Accept': 'application/json',
@@ -58,26 +59,34 @@ function funcPost(json){
   fetch(DATA_URL, {method, headers, body})
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
+
 }
 
 //ボタン押したときにテキストボックスの中身を取得する仕組み
 function funcEditButton(i){
-  console.log("fuincEditButton");
+  console.log("funcEditButton");
   var editId = document.getElementById("editId"+i).textContent;
   var editName = document.getElementById("editName"+i).value;
   var editTodo = document.getElementById("editTodo"+i).value;
 
+  console.log(editId);
+  console.log(editName);
+  console.log(editTodo);
+  //editIdToInt = parseInt(editId, 10);
   var obj = {
-    id: editId,
+    id: parseInt(editId, 10),
     name: editName,
     todo: editTodo
   }
 
-  console.log(obj);
+  console.log("json前:"+obj);
+
+
   if (editName == "" && editTodo == ""){
     console.log("empty");
   } else {
     funcPost(JSON.stringify(obj));
+    //console.log("json後:"+JSON.stringify(obj))
   }
 }
 
