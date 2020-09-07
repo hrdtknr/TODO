@@ -8,16 +8,15 @@
 
   <div>
     <p>新規TODO追加</p>
-    <form id="newTodoForm"><!--fetchで送信するためにid設定してみた(newTodoだとinputと被って入力フォームが機能しなくなる)-->
+    <form id="newTodoForm">
       <input type="text" id="newName" placeholder="Name">
       <input type="text" id="newTodo" placeholder="Todo">
-      <input type="button" onclick="func1()" value="send">
+      <input type="button" onclick="funcInsert()" value="send">
     </form>
     <!--divの外にあるとinputの入力結果の反映できないっぽい-->
     <p>この下に入力値をjsonにしたものが表示される</p>
     <p id="out_test"></p>
   </div>
-
 
   <script language="javascript" type="text/javascript" src="index.js">
   </script>

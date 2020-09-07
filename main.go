@@ -49,7 +49,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入
 
 	switch r.Method {
 		case http.MethodGet:
-			fmt.Println("methodget")
+			//fmt.Println("methodget")
 			getDB()
 			res, err := json.Marshal(todoList) //dbからの情報が入ったtodoListをjson形式にして変数resへ
 			if err != nil {
@@ -59,21 +59,20 @@ func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(res)
 		case http.MethodPost:
-			fmt.Println("post")
+			//fmt.Println("post")
 			var todoDecode Todo //構造体Todo型の変数
 			//var todoDecode TodoList //構造体Todo型の変数(配列はこれで受け取れる）
 			//fmt.Println(r.Body)
 			//NewDecoderはr.BodyのデータをDecode()の引数内の変数に格納する（パースする）
 			json.NewDecoder(r.Body).Decode(&todoDecode)
-			fmt.Println(todoDecode)
+			//fmt.Println(todoDecode)
 
 			if(todoDecode.ID == 0) {
-				fmt.Println("insert")
-				fmt.Println(todoDecode.ID)
+				// ID=0のときはinsert
 				insert(todoDecode.Name, todoDecode.Todo)
 			} else {
-				fmt.Println(todoDecode.Name)
-				fmt.Println(todoDecode.Todo)
+				// それ以外はupdate
+				update(todoDecode.ID, todoDecode.Name, todoDecode.Todo)
 			}
 		case http.MethodDelete:
 			fmt.Println("delete")
