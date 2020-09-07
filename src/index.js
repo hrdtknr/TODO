@@ -117,9 +117,10 @@ function generate_table() {
 
 
 const DATA_URL2 = 'http://localhost:8080/';
+/*
 function test(){
 console.log("test");
-  /*
+
   fetch(DATA_URL2)
   .then(function(response){
     return response.json();
@@ -138,5 +139,19 @@ console.log("test");
     //generate_table();
 
   });
-  */
+
 }
+*/
+
+
+const obj = {"id":9,"name":"へんしゅう","todo":"てすと"};
+console.log(obj);
+const method = "POST";
+const body = JSON.stringify(obj);
+const headers = {
+  'Accept': 'application/json',
+  'Content-Type': 'application/json'
+};
+fetch(DATA_URL, {method, headers, body})
+.then((res)=> res.json())
+.then(console.log).catch(console.error);

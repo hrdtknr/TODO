@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 	"encoding/json"
-	"io/ioutil"
+//	"io/ioutil"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -54,25 +54,10 @@ func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(res)
 
-	// url := "http://localhost:8080/todoList" のjsonを取得するテスト
-	url := "http://localhost:8080/todoList"
-	response, err := http.Get(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer response.Body.Close()
-
-	body, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fmt.Println(string(body))
-
-	//レスポンスのステータス
-	fmt.Println(string(response.Status))
-
+	var todoDecode Todo //構造体Todo型の変数
+	fmt.Println(r.Body)
+	fmt.Println(json.NewDecoder(r.Body).Decode(&todoDecode))
+	fmt.Println(todoDecode)
 }
 
 func getDB(){
