@@ -33,6 +33,7 @@ func main() {
 
 	port := "8080"
 
+	// http://localhost:8080/ にアクセスしたとき、ソースの".src"内のhtmlファイルを表示する
 	http.Handle("/", http.FileServer(http.Dir("./src")))
 	http.HandleFunc("/todoList", handleIndex) //go側でインポート設定する必要があった
 

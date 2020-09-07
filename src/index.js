@@ -36,19 +36,32 @@ fetch(DATA_URL)
     //objectをjson形式に変換
     var jsonInsert = JSON.stringify(obj);
 
-
     // json形式のテスト出力
-    console.log(jsonInsert);
+    //console.log(jsonInsert);
+
     // web画面に入力値をjson形式で表示
     document.getElementById("out_test").innerHTML = jsonInsert;
 
-    //グローバル変数への代入テスト
-    test = jsonInsert;
-    console.log(`test json out:${test}`);
-
     //ここから先にfetch機能でgoへ送る機能が欲しい
-    funcPost();
+    funcPost(jsonInsert);
  }
+
+//const DATA_URL2 = 'http://localhost:8080/';
+
+function funcPost(jsonInsert){
+  //testのデータが渡っているかの確認
+  console.log("funcPost jsonInsert");
+  console.log(jsonInsert);
+
+  const method = "POST";
+  const headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  };
+  fetch(DATA_URL, {method, headers, jsonInsert})
+  .then((res)=> res.json())
+  .then(console.log).catch(console.error);
+}
 
 //一覧表示処理
 function generate_table() {
@@ -107,22 +120,4 @@ function generate_table() {
   body.appendChild(tbl);
   // sets the border attribute of tbl to 2;
   tbl.setAttribute("border", "3");
-}
-
-
-const DATA_URL2 = 'http://localhost:8080/';
-
-function funcPost(){
-  const obj = test;//testはfunc1でテキストボックスの入力をjsonに変換したデータ
-  console.log("funcPost");
-  console.log(obj);//testのデータが渡っているかの確認
-  const method = "POST";
-  const body = JSON.stringify(obj);
-  const headers = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-  };
-  fetch(DATA_URL2, {method, headers, body})
-  .then((res)=> res.json())
-  .then(console.log).catch(console.error);
 }
