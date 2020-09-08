@@ -132,7 +132,7 @@ func update(id int, name string, todo string){
 	}
 	upd.Exec(name, todo, id)
 }
-
+/*
 func read(){
 	rows, err:= db.Query("SELECT * FROM todo")
 	defer rows.Close()
@@ -152,3 +152,4 @@ func read(){
 		fmt.Println(id, name, todo)
 	}
 }
+*/

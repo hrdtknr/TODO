@@ -82,7 +82,6 @@ function funcDelete(i){
   location.reload();
 }
 
-
 //一覧表示処理
 function generate_table() {
   // get the reference for the body
@@ -189,4 +188,3 @@ function generate_table() {
   // sets the border attribute of tbl to 2;
   tbl.setAttribute("border", "3");
 }
-
