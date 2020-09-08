@@ -71,7 +71,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入
 		case http.MethodDelete:
 			fmt.Println("delete/delete")
 
-			fmt.Println(r.ParseForm())
+			//fmt.Println(r.ParseForm())
 
 			json.NewDecoder(r.Body).Decode(&todoDecode)
 			//fmt.Println(todoDecode)

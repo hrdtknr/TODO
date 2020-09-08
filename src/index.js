@@ -2,14 +2,14 @@ var todoList;
 
 const DATA_URL = 'http://localhost:8080/todoList';
 
-fetch(DATA_URL)
+  fetch(DATA_URL)
   .then(function(response){
     return response.json();
   })
  .then(function(jsonData){
    todoList = jsonData;
    //table作成
-   generate_table();
+   generateTable();
   });
 
 function funcInsert() {
@@ -73,49 +73,48 @@ function funcDelete(i){
     name: "noname",
     todo: "notodo"
   }
-//  var param = location;//.search;
-  console.group("location:"+location);
-  console.group("loaction search:"+location.search);
 
-  //get パラメータが必要
-  //試しに手動で作成
-  var testURL ="http://localhost:8080/?id="+i;
   const method = "Delete";
   const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
   };
-  const body = testURL;//JSON.stringify(obj);
+  const body = JSON.stringify(obj);
 
-  //keyに対してvalueを
-  //オプションを指定
-  // Content-Type body の中身のデータかた
-
-  //手動クエリパラメータ送信
-  //console.log(testURL);
-//  fetch(testURL).then((res)=> res.json())
-//  .then(console.log).catch(console.error);
   fetch(DATA_URL, {method, headers, body})
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
 
   //location.reload();
-/*
-  //<div>にidを付与して、そのidのdivを削除
-  var removeTable = document.getElementById("todoTable");//globalにして他のcrudメソッドでも呼び出せるようにする
-  removeTable.innerHTML = "";//ok
-  //下記メソッドでも同じようにテーブルを削除できる
-  //removeTable.removeChild(removeTable.children[0]);//ok
-  //removeTable.remove();//ok
-
+  //removeTable();
+  removeTableRow(i);
   //crud反映前のtebleを読み込んでるっぽい
-  generate_table();
-  */
+  //generate_table();
+  //getTodoList();
+}
+
+//パッと見の挙動はおｋだけど、
+//微妙に表示されるテーブルがおかしいのと
+// => innerHTMLからremoveに変えたら解決
+//deleteにしか対応できないので保留
+function removeTableRow(i){
+  var removeTableRow = document.getElementById("tableRowId"+i);
+  console.log(removeTableRow);
+  //removeTableRow.innerHTML = "";
+  removeTableRow.remove();
+}
+
+
+function removeTable(){
+  //<div>にidを付与して、そのidのdivを削除
+  var removeTable = document.getElementById("todoTable");
+  removeTable.innerHTML = "";//ok
 }
 
 //一覧表示処理
 //var div;
-function generate_table() {
+function generateTable() {
+
   // get the reference for the body
 
   var body = document.getElementsByTagName("body")[0];
@@ -168,6 +167,7 @@ function generate_table() {
   for (var i = 0; i < todoList.length; i++) {
     // creates a table row
     var row = document.createElement("tr");
+    row.setAttribute("id", "tableRowId"+todoList[i].id); 
     // id列
     var cell1 = document.createElement("td");
     var cellText1 = document.createTextNode(todoList[i].id);
