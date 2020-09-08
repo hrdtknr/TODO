@@ -24,6 +24,8 @@ var todoList TodoList
 //DB接続設定
 var db, err =sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
 
+//go側を変更する前の状態にして、先にjs側の変更を
+
 //const URL = "http://localhost:8080"
 
 func main() {
@@ -58,6 +60,9 @@ func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入
 			}
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(res)
+
+
+
 		case http.MethodPost:
 			fmt.Println("post/insert")
 			json.NewDecoder(r.Body).Decode(&todoDecode)
@@ -65,7 +70,11 @@ func handleIndex(w http.ResponseWriter, r *http.Request){//この中にURLが入
 			insert(todoDecode.Name, todoDecode.Todo)
 		case http.MethodDelete:
 			fmt.Println("delete/delete")
+
+			fmt.Println(r.ParseForm())
+
 			json.NewDecoder(r.Body).Decode(&todoDecode)
+			//fmt.Println(todoDecode)
 			delete(todoDecode.ID)
 		case http.MethodPut:
 			fmt.Println("put/update")

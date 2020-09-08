@@ -18,18 +18,23 @@ function funcInsert() {
     name: document.getElementById("newName").value,
     todo: document.getElementById("newTodo").value
   }
-  const method = "Post";
-  const headers = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-  };
-  const body = JSON.stringify(obj);
-  //第2引数は method, headers, body の変数名で送る必要がある
-  fetch(DATA_URL, {method, headers, body})
-  .then((res)=> res.json())
-  .then(console.log).catch(console.error);
 
-  location.reload();
+  if ( obj.name == "" && obj.todo == "") {
+    console.log("name todo blank");
+
+  } else {
+    const method = "Post";
+    const headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    };
+    const body = JSON.stringify(obj);
+    //第2引数は method, headers, body の変数名で送る必要がある
+    fetch(DATA_URL, {method, headers, body})
+    .then((res)=> res.json())
+    .then(console.log).catch(console.error);
+    //location.reload();
+  }
 }
 
 //ボタン押したときにテキストボックスの中身を取得する仕組み
@@ -58,7 +63,7 @@ function funcUpdate(i){
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
 
-  location.reload();
+  //location.reload();
 }
 
 //削除行のidが渡ってればOK
@@ -68,27 +73,62 @@ function funcDelete(i){
     name: "noname",
     todo: "notodo"
   }
+//  var param = location;//.search;
+  console.group("location:"+location);
+  console.group("loaction search:"+location.search);
 
+  //get パラメータが必要
+  //試しに手動で作成
+  var testURL ="http://localhost:8080/?id="+i;
   const method = "Delete";
   const headers = {
     'Accept': 'application/json',
     'Content-Type': 'application/json'
   };
-  const body = JSON.stringify(obj);
+  const body = testURL;//JSON.stringify(obj);
+
+  //keyに対してvalueを
+  //オプションを指定
+  // Content-Type body の中身のデータかた
+
+  //手動クエリパラメータ送信
+  //console.log(testURL);
+//  fetch(testURL).then((res)=> res.json())
+//  .then(console.log).catch(console.error);
   fetch(DATA_URL, {method, headers, body})
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
 
-  location.reload();
+  //location.reload();
+/*
+  //<div>にidを付与して、そのidのdivを削除
+  var removeTable = document.getElementById("todoTable");//globalにして他のcrudメソッドでも呼び出せるようにする
+  removeTable.innerHTML = "";//ok
+  //下記メソッドでも同じようにテーブルを削除できる
+  //removeTable.removeChild(removeTable.children[0]);//ok
+  //removeTable.remove();//ok
+
+  //crud反映前のtebleを読み込んでるっぽい
+  generate_table();
+  */
 }
 
 //一覧表示処理
+//var div;
 function generate_table() {
   // get the reference for the body
+
   var body = document.getElementsByTagName("body")[0];
+  //body = document.getElementsByTagName("body")[0];
+
+  var div = document.createElement("div");
+  div.setAttribute("id","todoTable");
+
 
   // <table>作成処理
   var tbl = document.createElement("table");
+  //tbl = document.createElement("table");
+  //tbl.setAttribute("id", "todoTable");
 
   // <thead>作成処理
   var tblHead = document.createElement("thead");
@@ -183,8 +223,8 @@ function generate_table() {
   }
   // put the <tbody> in the <table>
   tbl.appendChild(tblBody);
-  // appends <table> into <body>
-  body.appendChild(tbl);
+  div.appendChild(tbl);
+  body.appendChild(div);
   // sets the border attribute of tbl to 2;
   tbl.setAttribute("border", "3");
 }
