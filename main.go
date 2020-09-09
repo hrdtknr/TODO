@@ -3,9 +3,9 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // 構造体の変数名の先頭を大文字にしないとテンプレートファイルに読みこめない
@@ -24,7 +24,6 @@ var (
 	// TODO js側の設定が終えたら 定義をdb = *sql.DBに変更してsql.Openの処理をmain内へ
 	db, err = sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
 )
-
 // go側を変更する前の状態にして、先にjs側の変更を
 func main() {
 	// http://localhost:8080/ にアクセスしたとき、ソースの".src"内のhtmlファイルを表示する
@@ -33,6 +32,7 @@ func main() {
 	port := "8080"
 	log.Printf("listening port %s", port)
 	log.Print(http.ListenAndServe(":"+port, nil))
+
 	db.Close() // TODO closeする場所確認
 }
 
@@ -48,23 +48,24 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(res)
-		log.Printf("%T", r.Body)
 	case http.MethodPost:
-		// TODO 同じエラー処理を繰り返しているので1つにまとめる
-		if err := json.NewDecoder(r.Body).Decode(&todoDecode); err != nil {
-			log.Println(err)
-		}
+		err := json.NewDecoder(r.Body).Decode(&todoDecode)
+		checkDecodeError(err)
 		insert(todoDecode.Name, todoDecode.Todo)
 	case http.MethodDelete:
-		if err := json.NewDecoder(r.Body).Decode(&todoDecode); err != nil {
-			log.Println(err)
-		}
+		err := json.NewDecoder(r.Body).Decode(&todoDecode)
+		checkDecodeError(err)
 		delete(todoDecode.ID)
 	case http.MethodPut:
-		if err := json.NewDecoder(r.Body).Decode(&todoDecode); err != nil {
-			log.Println(err)
-		}
+		err := json.NewDecoder(r.Body).Decode(&todoDecode)
+		checkDecodeError(err)
 		update(todoDecode.ID, todoDecode.Name, todoDecode.Todo)
+	}
+}
+
+func checkDecodeError(err error){
+	if err != nil{
+		log.Println(err)
 	}
 }
 
