@@ -1,4 +1,5 @@
 var todoList;
+//kokomade
 
 const DATA_URL = 'http://localhost:8080/todoList';
 
@@ -35,12 +36,13 @@ function funcInsert() {
     fetch(DATA_URL, {method, headers, body})
     .then((res)=> res.json())
     .then(console.log).catch(console.error);
-    //location.reload();
+    location.reload();
   }
 }
 
 //ボタン押したときにテキストボックスの中身を取得する仕組み
 function funcUpdate(i){
+  console.log(document.getElementById("editName"+i).value);
   var obj = {
     id: parseInt(document.getElementById("editId"+i).textContent, 10),
     name: document.getElementById("editName"+i).value,
@@ -65,7 +67,7 @@ function funcUpdate(i){
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
 
-  //location.reload();
+  location.reload();
 }
 
 //削除行のidが渡ってればOK
@@ -87,146 +89,101 @@ function funcDelete(i){
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
 
-  //location.reload();
-  //removeTable();
-  removeTableRow(i);
-  //crud反映前のtebleを読み込んでるっぽい
-  //generate_table();
-  //getTodoList();
+  location.reload();
 }
 
-//パッと見の挙動はおｋだけど、
-//微妙に表示されるテーブルがおかしいのと
-// => innerHTMLからremoveに変えたら解決
-//deleteにしか対応できないので保留
-function removeTableRow(i){
-  var removeTableRow = document.getElementById("tableRowId"+i);
-  console.log(removeTableRow);
-  //removeTableRow.innerHTML = "";
-  removeTableRow.remove();
+//table作成処理呼び出し
+function generateTable(){
+  makeThForThead();
+  makeTrForTbody();
 }
 
-
-function removeTable(){
-  //<div>にidを付与して、そのidのdivを削除
-  var removeTable = document.getElementById("todoTable");
-  removeTable.innerHTML = "";//ok
+//table削除処理呼び出し
+function deleteTable(){
+  // trclasstrの個を消す処理
+  // tbodyの子を消す処理
 }
 
-//一覧表示処理
-//var div;
-function generateTable() {
-
-  // get the reference for the body
-
-  var body = document.getElementsByTagName("body")[0];
-  //body = document.getElementsByTagName("body")[0];
-
-  var div = document.createElement("div");
-  div.setAttribute("id","todoTable");
-
-
-  // <table>作成処理
-  var tbl = document.createElement("table");
-  //tbl = document.createElement("table");
-  //tbl.setAttribute("id", "todoTable");
-
-  // <thead>作成処理
-  var tblHead = document.createElement("thead");
-  var rowH = document.createElement("tr");
-  var cell1H = document.createElement("td");
-  var cellText1H = document.createTextNode("ID");
-  cell1H.appendChild(cellText1H);
-  rowH.appendChild(cell1H);
-
-  var cell2H = document.createElement("td");
-  var cellText2H = document.createTextNode("NAME");
-  cell2H.appendChild(cellText2H);
-  rowH.appendChild(cell2H);
-
-  var cell3H = document.createElement("td");
-  var cellText3H = document.createTextNode("TODO");
-  cell3H.appendChild(cellText3H);
-  rowH.appendChild(cell3H);
-
-  var cell4H = document.createElement("td");
-  var cellText4H = document.createTextNode("EDIT");
-  cell4H.appendChild(cellText4H);
-  rowH.appendChild(cell4H);
-
-  var cell5H = document.createElement("td");
-  var cellText5H = document.createTextNode("DELETE");
-  cell5H.appendChild(cellText5H);
-  rowH.appendChild(cell5H);
-
-  tblHead.appendChild(rowH);
-  tbl.appendChild(tblHead);//<thead>を<tbody>へ入れる
-  // <thead>作成処理ここまで
-
-  // <tbody>作成処理
-  var tblBody = document.createElement("tbody");
-  //行とセルの中身を作成
-  for (var i = 0; i < todoList.length; i++) {
-    // creates a table row
-    var row = document.createElement("tr");
-    row.setAttribute("id", "tableRowId"+todoList[i].id); 
-    // id列
-    var cell1 = document.createElement("td");
-    var cellText1 = document.createTextNode(todoList[i].id);
-    cell1.setAttribute("id", "editId"+todoList[i].id);
-    cell1.setAttribute("value", todoList[i].id);
-    cell1.appendChild(cellText1);
-    row.appendChild(cell1);
-    // name列
-    var cell2 = document.createElement("td");
-    var cellText2 = document.createTextNode(todoList[i].name);
-    cell2.setAttribute("id", "nameForBlank"+todoList[i].id);
-    cell2.appendChild(cellText2);
-    row.appendChild(cell2);
-    // todo列
-    var cell3 = document.createElement("td");
-    var cellText3 = document.createTextNode(todoList[i].todo);
-    cell3.setAttribute("id", "todoForBlank"+todoList[i].id);
-    cell3.appendChild(cellText3);
-    row.appendChild(cell3);
-    // edit列
-    var cell4 = document.createElement("td");
-    var cell4Form = document.createElement("form");
-    var cell4InputName = document.createElement("input");
-    cell4InputName.setAttribute("type", "text");
-    cell4InputName.setAttribute("id", "editName"+todoList[i].id);//htmlのidにDBのIDを付与
-    cell4InputName.setAttribute("placeholder", todoList[i].name);
-    var cell4InputTodo = document.createElement("input");
-    cell4InputTodo.setAttribute("type", "text");
-    cell4InputTodo.setAttribute("id", "editTodo"+todoList[i].id);
-    cell4InputTodo.setAttribute("placeholder", todoList[i].todo);
-    var cell4InputButton = document.createElement("input");
-    cell4InputButton.setAttribute("type", "button");
-    cell4InputButton.setAttribute("onclick", "funcUpdate("+todoList[i].id+")");
-    cell4InputButton.setAttribute("value", "更新");
-    //cell4Form.appendChild(cell4InputId);
-    cell4Form.appendChild(cell4InputName);
-    cell4Form.appendChild(cell4InputTodo);
-    cell4Form.appendChild(cell4InputButton);
-    cell4.appendChild(cell4Form);
-    row.appendChild(cell4);
-    // delete列
-    var cell5 = document.createElement("td");
-    var cell5Form = document.createElement("form");
-    var cell5Input = document.createElement("input");
-    cell5Input.setAttribute("type", "button");
-    cell5Input.setAttribute("onclick", "funcDelete("+todoList[i].id+")");
-    cell5Input.setAttribute("value","削除");
-    cell5Form.appendChild(cell5Input);
-    cell5.appendChild(cell5Form);
-    row.appendChild(cell5);
-    // add the row to the end of the table body
-    tblBody.appendChild(row);
+// theadにthを作成する関数
+function makeThForThead(){
+  // ヘッダー列名
+  var thColumnName = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE'];
+  // 要素を追加するクラスを指定
+  var tr = document.getElementsByClassName("tr")[0];
+  // ヘッダー列の数だけ繰り返し<th>を作成
+  for(var i = 0; i < thColumnName.length; i++) {
+    var th = document.createElement("th");
+    var cell = document.createTextNode(thColumnName[i]);
+    th.appendChild(cell);
+    tr.appendChild(th);
   }
-  // put the <tbody> in the <table>
-  tbl.appendChild(tblBody);
-  div.appendChild(tbl);
-  body.appendChild(div);
-  // sets the border attribute of tbl to 2;
-  tbl.setAttribute("border", "3");
+}
+
+// tbodyにtrを作成する関数
+function makeTrForTbody(){
+  var tbody = document.getElementsByClassName("tbody")[0];
+  // ヘッダー列の数だけ繰り返し<th>を作成
+  for(var i = 0; i < todoList.length; i++) {
+    var tr = document.createElement("tr");
+    tr.setAttribute("id", "tableRowId"+todoList[i].id);
+    tbody.appendChild(tr);
+    //行trを作成した後、その行にtdを作成
+    makeTdForTbody(i);
+  }
+}
+
+// tbodyのtrにtdを作成する関数
+function makeTdForTbody(row_id){
+
+  //ループ処理用変数宣言
+  var tmp = [todoList[row_id].id, todoList[row_id].name, todoList[row_id].todo];
+  var setId = ["editId", "nameForBlank", "todoForBlank"];
+
+  var tr = document.getElementById("tableRowId"+todoList[row_id].id);
+  for(var i = 0; i < tmp.length; i++){
+    var td = document.createElement("td");
+    td.setAttribute("id", setId[i]+tmp[0]);
+    // DBのID要素にだけvalueを付与
+    // TODO fetchの処理を変更してこのif分を消す
+    if (i == 0) {
+      td.setAttribute("value", tmp[i]);
+    }
+    var cell = document.createTextNode(tmp[i]);
+    td.appendChild(cell);
+    tr.appendChild(td);
+  }
+  //更新フォーム生成処理
+  // TODO ここも同じ処理を繰り返しているのでループで処理
+  var tdEdit = document.createElement("td");
+  tdEdit.setAttribute("id", "editId"+tmp[0]);//ここで上書きしてた
+  var form = document.createElement("form");
+  var inputName = document.createElement("input");
+  inputName.setAttribute("type", "text");
+  inputName.setAttribute("id", "editName"+tmp[0]);//htmlのidにDBのIDを付与
+  inputName.setAttribute("placeholder", tmp[1]);//name
+  var inputTodo = document.createElement("input");
+  inputTodo.setAttribute("type", "text");
+  inputTodo.setAttribute("id", "editTodo"+tmp[0]);//htmlのidにDBのIDを付与
+  inputTodo.setAttribute("placeholder", tmp[2]);//todo
+  var inputButton = document.createElement("input");
+  inputButton.setAttribute("type", "button");
+  inputButton.setAttribute("onclick", "funcUpdate("+tmp[0]+")");
+  inputButton.setAttribute("value", "更新");
+  form.appendChild(inputName);
+  form.appendChild(inputTodo);
+  form.appendChild(inputButton);
+  tdEdit.appendChild(form);
+  tr.appendChild(tdEdit);
+
+  //削除ボタン生成処理
+  // TODO EDITフォームとひとまとめにする
+  var tdDelete = document.createElement("td");
+  var formDel = document.createElement("form");
+  var inputDel = document.createElement("input");
+  inputDel.setAttribute("type", "button");
+  inputDel.setAttribute("onclick", "funcDelete("+tmp[0]+")");
+  inputDel.setAttribute("value","削除");
+  formDel.appendChild(inputDel);
+  tdDelete.appendChild(formDel);
+  tr.appendChild(tdDelete);
 }
