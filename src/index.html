@@ -5,6 +5,12 @@
   <title>sample</title>
 </head>
 <body>
+  <div>
+    <form>
+      <input type="button" onclick="getList()" value="一覧表示">
+    </form>
+  </div>
+
 
   <div>
     <form class="newTodoForm">
@@ -12,6 +18,15 @@
       <input type="text" id="newTodo" placeholder="Todo">
       <input type="button" onclick="funcInsert()" value="新規TODO追加">
     </form>
+  </div>
+
+  <div>
+    <table>
+      <thead>
+        <tr class="tr"></tr>
+
+      </thead>
+    </table>
   </div>
 
   <script language="javascript" type="text/javascript" src="index.js">
