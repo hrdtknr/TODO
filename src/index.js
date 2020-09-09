@@ -2,6 +2,7 @@ var todoList;
 
 const DATA_URL = 'http://localhost:8080/todoList';
 
+function getList() {
   fetch(DATA_URL)
   .then(function(response){
     return response.json();
@@ -11,6 +12,7 @@ const DATA_URL = 'http://localhost:8080/todoList';
    //table作成
    generateTable();
   });
+}
 
 function funcInsert() {
   var obj = {
