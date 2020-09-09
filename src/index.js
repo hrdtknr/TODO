@@ -73,7 +73,10 @@ function funcUpdate(i){
 
 // TODO クエリパラメータで送信する方法へ変更
 function funcDelete(){
-  var url = new URL("http://localhost:8080/"),
+  // NG　http://localhost:8080/
+  // OK　http://localhost:8080/todoList
+  // エンドポイントを指定する
+  var url = new URL("http://localhost:8080/todoList"),
     params = {id: 100}
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
   fetch(url).then();

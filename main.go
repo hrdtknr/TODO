@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	//"fmt"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -42,6 +43,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 	case http.MethodGet:
 		res := r.URL.Query().Get("id")
 		w.Write([]byte(res))
+		log.Println("map",r.URL.Query())
 	case http.MethodPost:
 		err := json.NewDecoder(r.Body).Decode(&todoDecode)
 		checkDecodeError(err)
