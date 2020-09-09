@@ -73,33 +73,11 @@ function funcUpdate(i){
 
 // TODO クエリパラメータで送信する方法へ変更
 function funcDelete(i){
-  /*
-  var obj = {
-    id: parseInt(i, 10),
-    name: "noname",
-    todo: "notodo"
-  }
-
-  const method = "Delete";
-  const headers = {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-  };
-  const body = JSON.stringify(obj);
-
-  fetch(DATA_URL, {method, headers, body})
-  .then((res)=> res.json())
-  .then(console.log).catch(console.error);
-*/
   var url = new URL("http://localhost:8080/"),
     params = {id: i}
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
   fetch(url).then();
 
-/*
-  var url = new URL("http://localhost:8080/?id="+i);
-  fetch(url,  {method, headers, body});
-  */
   redisplayTable();
 }
 
