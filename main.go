@@ -40,16 +40,8 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 	var todoDecode Todo // 構造体Todo型の変数
 	switch r.Method {
 	case http.MethodGet:
-		getDB()
-		res, err := json.Marshal(todoList) // dbからの情報が入ったtodoListをjson形式にして変数resへ
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(res)
-		log.Println("r.URL.Query()の中身確認")
-		log.Println(r.URL.Query())
+		res := r.URL.Query().Get("id")
+		w.Write([]byte(res))
 	case http.MethodPost:
 		err := json.NewDecoder(r.Body).Decode(&todoDecode)
 		checkDecodeError(err)
