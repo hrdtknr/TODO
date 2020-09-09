@@ -72,9 +72,9 @@ function funcUpdate(i){
 }
 
 // TODO クエリパラメータで送信する方法へ変更
-function funcDelete(i){
+function funcDelete(){
   var url = new URL("http://localhost:8080/"),
-    params = {id: i}
+    params = {id: 100}
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
   fetch(url).then();
 
