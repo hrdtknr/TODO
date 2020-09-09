@@ -1,5 +1,4 @@
 var todoList;
-//kokomade
 
 const DATA_URL = 'http://localhost:8080/todoList';
 
@@ -10,8 +9,7 @@ function getList() {
   })
  .then(function(jsonData){
    todoList = jsonData;
-   //table作成
-   generateTable();
+   generateTable();// table作成
   });
 }
 
@@ -32,15 +30,18 @@ function funcInsert() {
       'Content-Type': 'application/json'
     };
     const body = JSON.stringify(obj);
-    //第2引数は method, headers, body の変数名で送る必要がある
+    // 第2引数は method, headers, body の変数名で送る必要がある
     fetch(DATA_URL, {method, headers, body})
     .then((res)=> res.json())
     .then(console.log).catch(console.error);
-    location.reload();
+
+    redisplayTable();
   }
+  // TODO テキストボックスを空にする処理が必要
+  // 新規TODOもjsの関数で表示して再表示する処理
 }
 
-//ボタン押したときにテキストボックスの中身を取得する仕組み
+// ボタン押したときにテキストボックスの中身を取得する仕組み
 function funcUpdate(i){
   console.log(document.getElementById("editName"+i).value);
   var obj = {
@@ -67,10 +68,10 @@ function funcUpdate(i){
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
 
-  location.reload();
+  redisplayTable();
 }
 
-//削除行のidが渡ってればOK
+// TODO クエリパラメータで送信する方法へ変更
 function funcDelete(i){
   var obj = {
     id: parseInt(i, 10),
@@ -89,7 +90,7 @@ function funcDelete(i){
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
 
-  location.reload();
+  redisplayTable();
 }
 
 //table作成処理呼び出し
@@ -99,9 +100,12 @@ function generateTable(){
 }
 
 //table削除処理呼び出し
-function deleteTable(){
-  // trclasstrの個を消す処理
-  // tbodyの子を消す処理
+function redisplayTable(){
+  var removeTr = document.getElementById("tr");
+  var removeTbody = document.getElementById("tbody");
+  removeTr.innerHTML = "";
+  removeTbody.innerHTML = "";
+  getList();
 }
 
 // theadにthを作成する関数
@@ -122,7 +126,6 @@ function makeThForThead(){
 // tbodyにtrを作成する関数
 function makeTrForTbody(){
   var tbody = document.getElementsByClassName("tbody")[0];
-  // ヘッダー列の数だけ繰り返し<th>を作成
   for(var i = 0; i < todoList.length; i++) {
     var tr = document.createElement("tr");
     tr.setAttribute("id", "tableRowId"+todoList[i].id);
@@ -134,49 +137,42 @@ function makeTrForTbody(){
 
 // tbodyのtrにtdを作成する関数
 function makeTdForTbody(row_id){
-
   //ループ処理用変数宣言
   var tmp = [todoList[row_id].id, todoList[row_id].name, todoList[row_id].todo];
   var setId = ["editId", "nameForBlank", "todoForBlank"];
-
+  // ID, NAME, TODO部分の作成
   var tr = document.getElementById("tableRowId"+todoList[row_id].id);
   for(var i = 0; i < tmp.length; i++){
     var td = document.createElement("td");
     td.setAttribute("id", setId[i]+tmp[0]);
-    // DBのID要素にだけvalueを付与
-    // TODO fetchの処理を変更してこのif分を消す
-    if (i == 0) {
-      td.setAttribute("value", tmp[i]);
-    }
+    td.setAttribute("value", tmp[i]);
     var cell = document.createTextNode(tmp[i]);
     td.appendChild(cell);
     tr.appendChild(td);
   }
+
   //更新フォーム生成処理
-  // TODO ここも同じ処理を繰り返しているのでループで処理
   var tdEdit = document.createElement("td");
-  tdEdit.setAttribute("id", "editId"+tmp[0]);//ここで上書きしてた
   var form = document.createElement("form");
-  var inputName = document.createElement("input");
-  inputName.setAttribute("type", "text");
-  inputName.setAttribute("id", "editName"+tmp[0]);//htmlのidにDBのIDを付与
-  inputName.setAttribute("placeholder", tmp[1]);//name
-  var inputTodo = document.createElement("input");
-  inputTodo.setAttribute("type", "text");
-  inputTodo.setAttribute("id", "editTodo"+tmp[0]);//htmlのidにDBのIDを付与
-  inputTodo.setAttribute("placeholder", tmp[2]);//todo
-  var inputButton = document.createElement("input");
-  inputButton.setAttribute("type", "button");
-  inputButton.setAttribute("onclick", "funcUpdate("+tmp[0]+")");
-  inputButton.setAttribute("value", "更新");
-  form.appendChild(inputName);
-  form.appendChild(inputTodo);
-  form.appendChild(inputButton);
+  var attr = ["editName", "editTodo"];
+  for(var i = 0; i < 3; i++){
+    var input = document.createElement("input");
+    if(i != 2){
+      input.setAttribute("type", "text");
+      input.setAttribute("id", attr[i]+tmp[0]);//htmlのidにDBのIDを付与
+      input.setAttribute("placeholder", tmp[i+1]);
+    } else { //ボタン生成時の処理
+      input.setAttribute("type", "button");
+      input.setAttribute("onclick", "funcUpdate("+tmp[0]+")");
+      input.setAttribute("value", "更新");
+    }
+    form.appendChild(input);
+  }
   tdEdit.appendChild(form);
   tr.appendChild(tdEdit);
 
   //削除ボタン生成処理
-  // TODO EDITフォームとひとまとめにする
+  // TODO EDITフォームとひとまとめにできるか考える
   var tdDelete = document.createElement("td");
   var formDel = document.createElement("form");
   var inputDel = document.createElement("input");
