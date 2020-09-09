@@ -48,6 +48,8 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(res)
+		log.Println("r.URL.Query()の中身確認")
+		log.Println(r.URL.Query())
 	case http.MethodPost:
 		err := json.NewDecoder(r.Body).Decode(&todoDecode)
 		checkDecodeError(err)
