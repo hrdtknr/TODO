@@ -9,21 +9,18 @@ import (
 	"strconv"
 )
 
-// 構造体の変数名の先頭を大文字にしないとテンプレートファイルに読みこめない
 type Todo struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 	Todo string `json:"todo"`
 }
 
-// Todo型の配列TodoList
 type TodoList []Todo
 
 var (
 	todoList TodoList
-	// DB接続設定
-	db  *sql.DB
-	err error
+	db       *sql.DB
+	err      error
 )
 
 func main() {
@@ -33,23 +30,22 @@ func main() {
 	}
 	defer db.Close()
 
-	// http://localhost:8080/ にアクセスしたとき、ソースの".src"内のhtmlファイルを表示する
 	http.Handle("/", http.FileServer(http.Dir("./src")))
-	http.HandleFunc("/todoList", handleIndex) // go側でインポート設定する必要があった
+	http.HandleFunc("/todoList", handleIndex)
 	port := "8080"
 	log.Printf("listening port %s", port)
 	log.Print(http.ListenAndServe(":"+port, nil))
 }
 
-func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが入ってて、クエリとGETを組み合わせる
-	var todoDecode Todo // 構造体Todo型の変数
+func handleIndex(w http.ResponseWriter, r *http.Request) {
+	var todoDecode Todo
 	switch r.Method {
 	case http.MethodGet:
 		if err := getDB(); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		res, err := json.Marshal(todoList) // dbからの情報が入ったtodoListをjson形式にして変数resへ
+		res, err := json.Marshal(todoList)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -57,22 +53,29 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(res))
 	case http.MethodPost:
-		err := json.NewDecoder(r.Body).Decode(&todoDecode)
-		checkDecodeError(err)
+		if err := json.NewDecoder(r.Body).Decode(&todoDecode); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		if err := insert(todoDecode.Name, todoDecode.Todo); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	case http.MethodDelete:
-		var id int
-		id, _ = strconv.Atoi(r.URL.Query().Get("id"))
+		id, err := strconv.Atoi(r.URL.Query().Get("id"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		if err := delete(id); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	case http.MethodPut:
-		err := json.NewDecoder(r.Body).Decode(&todoDecode)
-		checkDecodeError(err)
+		if err := json.NewDecoder(r.Body).Decode(&todoDecode); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		if err := update(todoDecode.ID, todoDecode.Name, todoDecode.Todo); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -80,13 +83,8 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 	}
 }
 
-func checkDecodeError(err error) {
-	if err != nil {
-		log.Println(err)
-	}
-}
-
-func getDB() (err error){
+// DBからデータを取得
+func getDB() (err error) {
 	rows, err := db.Query("SELECT * FROM todo")
 	defer rows.Close()
 	if err != nil {
@@ -95,7 +93,6 @@ func getDB() (err error){
 	}
 
 	var todoListTmp TodoList
-	//todoListTmp := []TodoList{}
 	for rows.Next() {
 		var id int
 		var name string
@@ -116,9 +113,10 @@ func getDB() (err error){
 	return nil
 }
 
-func insert(name string, todo string) (err error){
+// DB insert処理
+func insert(name string, todo string) (err error) {
 	ins, err := db.Prepare("INSERT INTO todo(name, todo) VALUES(?,?)")
-	if err != nil { // error処理まででひとつのカタマリ
+	if err != nil {
 		log.Println(err)
 		return err
 	}
@@ -126,7 +124,8 @@ func insert(name string, todo string) (err error){
 	return nil
 }
 
-func delete(id int) (err error){
+// DB delete処理
+func delete(id int) (err error) {
 	del, err := db.Prepare("DELETE FROM todo WHERE id = ?")
 	if err != nil {
 		log.Println(err)
@@ -136,7 +135,8 @@ func delete(id int) (err error){
 	return nil
 }
 
-func update(id int, name string, todo string) (err error){
+// DB update処理
+func update(id int, name string, todo string) (err error) {
 	upd, err := db.Prepare("UPDATE todo SET name = ?, todo = ? WHERE id = ?")
 	if err != nil {
 		log.Println(err)
