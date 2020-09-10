@@ -1,8 +1,8 @@
-var todoList;
-
+let todoList;
 const DATA_URL = 'http://localhost:8080/todoList';
 getList();
 
+// jsonデータ取得とテーブル作成
 function getList() {
   fetch(DATA_URL)
   .then(function(response){
@@ -10,20 +10,20 @@ function getList() {
   })
  .then(function(jsonData){
    todoList = jsonData;
-   generateTable();// table作成
+   generateTable();
   });
 }
 
-function funcInsert() {
-  var obj = {
+// insert処理
+function insertTodo() {
+  let obj = {
     id: 0,
     name: document.getElementById("newName").value,
     todo: document.getElementById("newTodo").value
   }
 
-  if ( obj.name == "" && obj.todo == "") {
-    console.log("name todo blank");
-
+  if ( !obj.name && !obj.todo) {
+    alert("NameかTodoのどちらかは入力してください");
   } else {
     const method = "Post";
     const headers = {
@@ -31,28 +31,23 @@ function funcInsert() {
       'Content-Type': 'application/json'
     };
     const body = JSON.stringify(obj);
-    // 第2引数は method, headers, body の変数名で送る必要がある
     fetch(DATA_URL, {method, headers, body})
     .then((res)=> res.json())
     .then(console.log).catch(console.error);
-
-
   }
   document.getElementById("newName").value = '';
   document.getElementById("newTodo").value = '';
   redisplayTable();
 }
 
-// ボタン押したときにテキストボックスの中身を取得する仕組み
-function funcUpdate(i){
-  console.log(document.getElementById("editName"+i).value);
-  var obj = {
+// update処理
+function updateTodo(i){
+  let obj = {
     id: parseInt(document.getElementById("editId"+i).textContent, 10),
     name: document.getElementById("editName"+i).value,
     todo: document.getElementById("editTodo"+i).value
   }
 
-  //空文字で上書きしないための処理
   if (obj.name == "") {
     obj.name = document.getElementById("nameForBlank"+i).textContent;
   }
@@ -70,15 +65,11 @@ function funcUpdate(i){
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
 
-  getList();
   redisplayTable();
 }
 
-// クエリパラメータで送信する
-function funcDelete(i){
-  // NG　http://localhost:8080/
-  // OK　http://localhost:8080/todoList
-  // エンドポイントを指定する
+// delete処理 クエリパラメータ
+function deleteTodo(i){
   const params = {id: i};
   const qs = new URLSearchParams(params)
   fetch(`http://localhost:8080/todoList?${qs}`, {method: 'DELETE'}).then();
@@ -86,86 +77,80 @@ function funcDelete(i){
   redisplayTable();
 }
 
-//table作成処理呼び出し
+// table作成処理
 function generateTable(){
-  // thead のtr作成
-  var thead = document.getElementsByClassName("thead")[0]
-  var tr = document.createElement("tr");
-  var column = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE']; //thead column
+  let thead = document.getElementsByClassName("thead")[0]
+  let tr = document.createElement("tr");
+  let column = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE'];
   for(c of column){
-    var th = document.createElement("th");
-    var cell = document.createTextNode(c);
+    let th = document.createElement("th");
+    let cell = document.createTextNode(c);
     th.appendChild(cell);
     tr.appendChild(th);
     thead.appendChild(tr);
   }
 
-  // tbody のtr作成
-  var tbody = document.getElementsByClassName("tbody")[0]
+  let tbody = document.getElementsByClassName("tbody")[0]
   for(todo of todoList){
-    var tr = document.createElement("tr");
+    let tr = document.createElement("tr");
     tr.setAttribute("id", "tableRowId"+todo.id);
     tbody.appendChild(tr);
-    makeTdForTbody(todo); //td作成処理
+    makeTdForTbody(todo);
   }
 }
 
 // tbodyのtrにtdを作成する関数
-// td内に挿入するデータが引数（id,name,todo）
 function makeTdForTbody(data){
-  //ループ処理用変数宣言
-  var tmp = [data.id, data.name, data.todo];
-  var setId = ["editId", "nameForBlank", "todoForBlank"];
-  // ID, NAME, TODO部分の作成
-  var tr = document.getElementById("tableRowId"+data.id);
-  var i = 0;
+  let tmp = [data.id, data.name, data.todo];
+  let setId = ["editId", "nameForBlank", "todoForBlank"];
+  let tr = document.getElementById("tableRowId"+data.id);
+  let i = 0;
   for(t of tmp){
-    var td = document.createElement("td");
+    let td = document.createElement("td");
     td.setAttribute("id", setId[i]+tmp[0]);
     td.setAttribute("value", t);
-    var cell = document.createTextNode(t);
+    let cell = document.createTextNode(t);
     td.appendChild(cell);
     tr.appendChild(td);
     i++
   }
-  //更新フォーム生成処理
-  var tdEdit = document.createElement("td");
-  var form = document.createElement("form");
-  var attr = ["editName", "editTodo"];
-  // TODO setaattrに書きたい内容をStringの配列で保持して拡張for文?
-  for(var i = 0; i < 3; i++){
-    var input = document.createElement("input");
-    if(i != 2){
+
+  let tdEdit = document.createElement("td");
+  let form = document.createElement("form");
+  let attr = ["editName", "editTodo", "button"];
+  i = 0;
+  for(a of attr){
+    let input = document.createElement("input");
+    if(a != "button"){
       input.setAttribute("type", "text");
-      input.setAttribute("id", attr[i]+tmp[0]);//htmlのidにDBのIDを付与
+      input.setAttribute("id", a+tmp[0]);
       input.setAttribute("placeholder", tmp[i+1]);
-    } else { //ボタン生成時の処理
+    } else {
       input.setAttribute("type", "button");
-      input.setAttribute("onclick", "funcUpdate("+tmp[0]+")");
+      input.setAttribute("onclick", "updateTodo("+tmp[0]+")");
       input.setAttribute("value", "更新");
     }
     form.appendChild(input);
+    i++;
   }
   tdEdit.appendChild(form);
   tr.appendChild(tdEdit);
 
-  //削除ボタン生成処理
-  // TODO EDITフォームとひとまとめにできるか考える
-  var tdDelete = document.createElement("td");
-  var formDel = document.createElement("form");
-  var inputDel = document.createElement("input");
+  const tdDelete = document.createElement("td");
+  const formDel = document.createElement("form");
+  const inputDel = document.createElement("input");
   inputDel.setAttribute("type", "button");
-  inputDel.setAttribute("onclick", "funcDelete("+tmp[0]+")");
+  inputDel.setAttribute("onclick", "deleteTodo("+tmp[0]+")");
   inputDel.setAttribute("value","削除");
   formDel.appendChild(inputDel);
   tdDelete.appendChild(formDel);
   tr.appendChild(tdDelete);
 }
 
-//table削除処理呼び出し
+// table削除処理と再表示処理
 function redisplayTable(){
-  var removeTr = document.getElementById("thead");
-  var removeTbody = document.getElementById("tbody");
+  const removeTr = document.getElementById("thead");
+  const removeTbody = document.getElementById("tbody");
   removeTr.innerHTML = "";
   removeTbody.innerHTML = "";
   getList();
