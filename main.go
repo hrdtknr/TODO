@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -47,7 +48,13 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 			return
 		}
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(res)
+		w.Write([]byte(res))
+		var id int
+		id, _ = strconv.Atoi(r.URL.Query().Get("id"))
+		//log.Println("id",id)
+		if id != 0 { // TODO id 0の情報が来てる 原因調べる
+			delete(id)
+		}
 	case http.MethodPost:
 		err := json.NewDecoder(r.Body).Decode(&todoDecode)
 		checkDecodeError(err)
