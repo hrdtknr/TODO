@@ -45,7 +45,10 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 	var todoDecode Todo // 構造体Todo型の変数
 	switch r.Method {
 	case http.MethodGet:
-		getDB()
+		if err := getDB(); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 		res, err := json.Marshal(todoList) // dbからの情報が入ったtodoListをjson形式にして変数resへ
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -56,15 +59,24 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 	case http.MethodPost:
 		err := json.NewDecoder(r.Body).Decode(&todoDecode)
 		checkDecodeError(err)
-		insert(todoDecode.Name, todoDecode.Todo)
+		if err := insert(todoDecode.Name, todoDecode.Todo); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	case http.MethodDelete:
 		var id int
 		id, _ = strconv.Atoi(r.URL.Query().Get("id"))
-		delete(id)
+		if err := delete(id); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	case http.MethodPut:
 		err := json.NewDecoder(r.Body).Decode(&todoDecode)
 		checkDecodeError(err)
-		update(todoDecode.ID, todoDecode.Name, todoDecode.Todo)
+		if err := update(todoDecode.ID, todoDecode.Name, todoDecode.Todo); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
@@ -74,22 +86,23 @@ func checkDecodeError(err error) {
 	}
 }
 
-func getDB() {
+func getDB() (err error){
 	rows, err := db.Query("SELECT * FROM todo")
 	defer rows.Close()
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
 
 	var todoListTmp TodoList
+	//todoListTmp := []TodoList{}
 	for rows.Next() {
 		var id int
 		var name string
 		var todo string
 		if err := rows.Scan(&id, &name, &todo); err != nil {
 			log.Println(err)
-			return
+			return err
 		}
 
 		todoTmp := Todo{
@@ -100,31 +113,35 @@ func getDB() {
 		todoListTmp = append(todoListTmp, todoTmp)
 	}
 	todoList = todoListTmp
+	return nil
 }
 
-func insert(name string, todo string) {
+func insert(name string, todo string) (err error){
 	ins, err := db.Prepare("INSERT INTO todo(name, todo) VALUES(?,?)")
 	if err != nil { // error処理まででひとつのカタマリ
 		log.Println(err)
-		return
+		return err
 	}
 	ins.Exec(name, todo)
+	return nil
 }
 
-func delete(id int) {
+func delete(id int) (err error){
 	del, err := db.Prepare("DELETE FROM todo WHERE id = ?")
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
 	del.Exec(id)
+	return nil
 }
 
-func update(id int, name string, todo string) {
+func update(id int, name string, todo string) (err error){
 	upd, err := db.Prepare("UPDATE todo SET name = ?, todo = ? WHERE id = ?")
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
 	upd.Exec(name, todo, id)
+	return nil
 }

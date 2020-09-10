@@ -36,13 +36,11 @@ function funcInsert() {
     .then((res)=> res.json())
     .then(console.log).catch(console.error);
 
-    redisplayTable();
+
   }
-  // TODO テキストボックスを空にする処理が必要
-  // https://web-tsuku.life/input-text-form-clear/
-  // フォームクリアイベントをはさむ
   document.getElementById("newName").value = '';
   document.getElementById("newTodo").value = '';
+  redisplayTable();
 }
 
 // ボタン押したときにテキストボックスの中身を取得する仕組み
@@ -72,10 +70,11 @@ function funcUpdate(i){
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
 
+  getList();
   redisplayTable();
 }
 
-// TODO クエリパラメータで送信する方法へ変更
+// クエリパラメータで送信する
 function funcDelete(i){
   // NG　http://localhost:8080/
   // OK　http://localhost:8080/todoList
