@@ -82,50 +82,32 @@ function funcDelete(i){
   // エンドポイントを指定する
   const params = {id: i};
   const qs = new URLSearchParams(params)
-  fetch(`http://localhost:8080/todoList?${qs}`).then();
+  fetch(`http://localhost:8080/todoList?${qs}`, {method: 'DELETE'}).then();
 
   redisplayTable();
 }
 
 //table作成処理呼び出し
 function generateTable(){
-  makeThForThead();
-  makeTrForTbody();
-}
-
-//table削除処理呼び出し
-function redisplayTable(){
-  var removeTr = document.getElementById("tr");
-  var removeTbody = document.getElementById("tbody");
-  removeTr.innerHTML = "";
-  removeTbody.innerHTML = "";
-  getList();
-}
-
-// theadにthを作成する関数
-function makeThForThead(){
-  // ヘッダー列名
-  var thColumnName = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE'];
-  // 要素を追加するクラスを指定
-  var tr = document.getElementsByClassName("tr")[0];
-  // ヘッダー列の数だけ繰り返し<th>を作成
-  for(var i = 0; i < thColumnName.length; i++) {
+  // thead のtr作成
+  var thead = document.getElementsByClassName("thead")[0]
+  var tr = document.createElement("tr");
+  var column = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE']; //thead column
+  for(c of column){
     var th = document.createElement("th");
-    var cell = document.createTextNode(thColumnName[i]);
+    var cell = document.createTextNode(c);
     th.appendChild(cell);
     tr.appendChild(th);
+    thead.appendChild(tr);
   }
-}
 
-// tbodyにtrを作成する関数
-function makeTrForTbody(){
-  var tbody = document.getElementsByClassName("tbody")[0];
-  for(var i = 0; i < todoList.length; i++) {
+  // tbody のtr作成
+  var tbody = document.getElementsByClassName("tbody")[0]
+  for(todo of todoList){
     var tr = document.createElement("tr");
-    tr.setAttribute("id", "tableRowId"+todoList[i].id);
+    tr.setAttribute("id", "tableRowId"+todo.id);
     tbody.appendChild(tr);
-    //行trを作成した後、その行にtdを作成
-    makeTdForTbody(i);
+    makeTdForTbody(todo); //td作成処理
   }
 }
 
@@ -133,16 +115,12 @@ function makeTrForTbody(){
 // td内に挿入するデータが引数（id,name,todo）
 function makeTdForTbody(data){
   //ループ処理用変数宣言
-  console.log("data:"+data);
-  console.log("id:"+data.id);
   var tmp = [data.id, data.name, data.todo];
-  console.log("tmp;"+tmp);
   var setId = ["editId", "nameForBlank", "todoForBlank"];
   // ID, NAME, TODO部分の作成
   var tr = document.getElementById("tableRowId"+data.id);
   var i = 0;
   for(t of tmp){
-    console.log("t:"+t)
     var td = document.createElement("td");
     td.setAttribute("id", setId[i]+tmp[0]);
     td.setAttribute("value", t);
@@ -151,24 +129,11 @@ function makeTdForTbody(data){
     tr.appendChild(td);
     i++
   }
-  /*
-  var tmp = [todoList[row_id].id, todoList[row_id].name, todoList[row_id].todo];
-  var setId = ["editId", "nameForBlank", "todoForBlank"];
-  // ID, NAME, TODO部分の作成
-  var tr = document.getElementById("tableRowId"+todoList[row_id].id);
-  for(var i = 0; i < tmp.length; i++){
-    var td = document.createElement("td");
-    td.setAttribute("id", setId[i]+tmp[0]);
-    td.setAttribute("value", tmp[i]);
-    var cell = document.createTextNode(tmp[i]);
-    td.appendChild(cell);
-    tr.appendChild(td);
-  }
-*/
   //更新フォーム生成処理
   var tdEdit = document.createElement("td");
   var form = document.createElement("form");
   var attr = ["editName", "editTodo"];
+  // TODO setaattrに書きたい内容をStringの配列で保持して拡張for文?
   for(var i = 0; i < 3; i++){
     var input = document.createElement("input");
     if(i != 2){
@@ -196,43 +161,13 @@ function makeTdForTbody(data){
   formDel.appendChild(inputDel);
   tdDelete.appendChild(formDel);
   tr.appendChild(tdDelete);
-
 }
 
-function makeTest(){
-  var thColumnName = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE'];
-  var cn = "thead";
-  makeTr(cn, thColumnName);
-  cn = "tbody";
-  makeTr(cn, todoList);
-}
-
-
-
-//trを作成する関数
-//引数cn:thead or tbodyでどちらに作るかを判定
-//dataは何行trを作るかの情報
-function makeTr(cn, data){//
-  var className = document.getElementsByClassName(cn)[0];
-  //trを作る処理自体は1回しかしてない
-  var tr = document.createElement("tr");
-  for(d of data) {
-    // ここにthを作成する処理
-    if(cn == "thead"){
-      var th = document.createElement("th");
-      var cell = document.createTextNode(d);
-      th.appendChild(cell);
-      tr.appendChild(th);
-      className.appendChild(tr);
-    }
-    if(cn == "tbody"){ // tbodyのときだけidを付与（CRUDで使用するため
-      var tr = document.createElement("tr");
-      tr.setAttribute("id", "tableRowId"+d.id);
-      console.log(d);
-      //makeTdForTbody(d);
-      className.appendChild(tr);
-      makeTdForTbody(d);//trができる前にTDを作ろうとしていた のでtr作成td作成の処理順
-    }
-    //makeTdForTbody(d);
-  }
+//table削除処理呼び出し
+function redisplayTable(){
+  var removeTr = document.getElementById("thead");
+  var removeTbody = document.getElementById("tbody");
+  removeTr.innerHTML = "";
+  removeTbody.innerHTML = "";
+  getList();
 }
