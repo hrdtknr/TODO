@@ -2,6 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8">
+  <link href="css/index.css" rel="stylesheet"></link>
   <title>sample</title>
 </head>
 <body>
@@ -10,15 +11,6 @@
       <input type="button" onclick="getList()" value="一覧表示">
     </form>
   </div>
-
-  <div>
-    <form>
-      <input type="button" onclick="funcDelete()" value="delete">
-    </form>
-  </div>
-
-
-
   <div>
     <form class="newTodoForm">
       <input type="text" id="newName" placeholder="Name">
@@ -26,8 +18,7 @@
       <input type="button" onclick="funcInsert()" value="新規TODO追加">
     </form>
   </div>
-
-  <div>
+  <div class="divTable">
     <table border="3">
       <thead>
         <tr class="tr" id="tr"></tr>

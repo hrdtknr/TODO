@@ -39,6 +39,8 @@ function funcInsert() {
   }
   // TODO テキストボックスを空にする処理が必要
   // 新規TODOもjsの関数で表示して再表示する処理
+  // https://web-tsuku.life/input-text-form-clear/
+  // フォームクリアイベントをはさむ
 }
 
 // ボタン押したときにテキストボックスの中身を取得する仕組み
@@ -72,14 +74,19 @@ function funcUpdate(i){
 }
 
 // TODO クエリパラメータで送信する方法へ変更
-function funcDelete(){
+function funcDelete(i){
   // NG　http://localhost:8080/
   // OK　http://localhost:8080/todoList
   // エンドポイントを指定する
+  // TODO hang遡って送信方法確認
+  /*
   var url = new URL("http://localhost:8080/todoList"),
-    params = {id: 100}
+    params = {id: i}
   Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-  fetch(url).then();
+  */
+  const params = { id: i};
+  const qs = new URLSearchParams(params)
+  fetch(`http://localhost:8080/todoList?${qs}`).then();
 
   redisplayTable();
 }

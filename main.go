@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	//"fmt"
+	"strconv"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -41,9 +41,20 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 	var todoDecode Todo // 構造体Todo型の変数
 	switch r.Method {
 	case http.MethodGet:
-		res := r.URL.Query().Get("id")
+		getDB()
+		res, err := json.Marshal(todoList) // dbからの情報が入ったtodoListをjson形式にして変数resへ
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(res))
-		log.Println("map",r.URL.Query())
+		var id int
+		id, _ = strconv.Atoi(r.URL.Query().Get("id"))
+		//log.Println("id",id)
+		if id != 0 { // TODO id 0の情報が来てる 原因調べる
+			delete(id)
+		}
 	case http.MethodPost:
 		err := json.NewDecoder(r.Body).Decode(&todoDecode)
 		checkDecodeError(err)
