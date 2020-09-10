@@ -38,9 +38,6 @@ function funcInsert() {
 
     redisplayTable();
   }
-  // TODO テキストボックスを空にする処理が必要
-  // https://web-tsuku.life/input-text-form-clear/
-  // フォームクリアイベントをはさむ
   document.getElementById("newName").value = '';
   document.getElementById("newTodo").value = '';
 }
@@ -75,7 +72,7 @@ function funcUpdate(i){
   redisplayTable();
 }
 
-// TODO クエリパラメータで送信する方法へ変更
+// クエリパラメータで送信する
 function funcDelete(i){
   // NG　http://localhost:8080/
   // OK　http://localhost:8080/todoList

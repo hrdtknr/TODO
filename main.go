@@ -56,7 +56,10 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 	case http.MethodPost:
 		err := json.NewDecoder(r.Body).Decode(&todoDecode)
 		checkDecodeError(err)
-		insert(todoDecode.Name, todoDecode.Todo)
+		if err := insert(todoDecode.Name, todoDecode.Todo); err != nil {
+			log.Println(err)
+			return
+		}
 	case http.MethodDelete:
 		var id int
 		id, _ = strconv.Atoi(r.URL.Query().Get("id"))
@@ -102,13 +105,14 @@ func getDB() {
 	todoList = todoListTmp
 }
 
-func insert(name string, todo string) {
+func insert(name string, todo string) (err error){
 	ins, err := db.Prepare("INSERT INTO todo(name, todo) VALUES(?,?)")
 	if err != nil { // error処理まででひとつのカタマリ
 		log.Println(err)
-		return
+		return err
 	}
 	ins.Exec(name, todo)
+	return nil
 }
 
 func delete(id int) {
