@@ -82,50 +82,45 @@ function funcDelete(i){
   // エンドポイントを指定する
   const params = {id: i};
   const qs = new URLSearchParams(params)
-  fetch(`http://localhost:8080/todoList?${qs}`).then();
+  fetch(`http://localhost:8080/todoList?${qs}`, {method: 'DELETE'}).then();
 
   redisplayTable();
 }
 
 //table作成処理呼び出し
 function generateTable(){
-  makeThForThead();
-  makeTrForTbody();
-}
+  var columnName = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE'];
+  const tableData = [
+    {className: "thead", data: columnName},
+    {className: "tbody", data: todoList}
+  ];
 
-//table削除処理呼び出し
-function redisplayTable(){
-  var removeTr = document.getElementById("tr");
-  var removeTbody = document.getElementById("tbody");
-  removeTr.innerHTML = "";
-  removeTbody.innerHTML = "";
-  getList();
+  makeTr(tableData[0].className, tableData[0].data);
+  makeTr(tableData[1].className, tableData[1].data);
 }
+//trを作成する関数
+//引数cn:thead or tbodyでどちらに作るかを判定
+//dataは何行trを作るかの情報
+function makeTr(cn, data){
+  console.log(cn);
 
-// theadにthを作成する関数
-function makeThForThead(){
-  // ヘッダー列名
-  var thColumnName = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE'];
-  // 要素を追加するクラスを指定
-  var tr = document.getElementsByClassName("tr")[0];
-  // ヘッダー列の数だけ繰り返し<th>を作成
-  for(var i = 0; i < thColumnName.length; i++) {
-    var th = document.createElement("th");
-    var cell = document.createTextNode(thColumnName[i]);
-    th.appendChild(cell);
-    tr.appendChild(th);
-  }
-}
-
-// tbodyにtrを作成する関数
-function makeTrForTbody(){
-  var tbody = document.getElementsByClassName("tbody")[0];
-  for(var i = 0; i < todoList.length; i++) {
-    var tr = document.createElement("tr");
-    tr.setAttribute("id", "tableRowId"+todoList[i].id);
-    tbody.appendChild(tr);
-    //行trを作成した後、その行にtdを作成
-    makeTdForTbody(i);
+  var className = document.getElementsByClassName(cn)[0];
+  var tr = document.createElement("tr");
+  for(d of data) {
+    if(cn == "thead"){
+      var th = document.createElement("th");
+      var cell = document.createTextNode(d);
+      th.appendChild(cell);
+      tr.appendChild(th);
+      className.appendChild(tr);
+    }
+    if(cn == "tbody"){ // tbodyのときだけidを付与（CRUDで使用するため
+      var tr = document.createElement("tr");
+      tr.setAttribute("id", "tableRowId"+d.id);
+      console.log(d);
+      className.appendChild(tr);
+      makeTdForTbody(d); //td作成処理
+    }
   }
 }
 
@@ -151,20 +146,6 @@ function makeTdForTbody(data){
     tr.appendChild(td);
     i++
   }
-  /*
-  var tmp = [todoList[row_id].id, todoList[row_id].name, todoList[row_id].todo];
-  var setId = ["editId", "nameForBlank", "todoForBlank"];
-  // ID, NAME, TODO部分の作成
-  var tr = document.getElementById("tableRowId"+todoList[row_id].id);
-  for(var i = 0; i < tmp.length; i++){
-    var td = document.createElement("td");
-    td.setAttribute("id", setId[i]+tmp[0]);
-    td.setAttribute("value", tmp[i]);
-    var cell = document.createTextNode(tmp[i]);
-    td.appendChild(cell);
-    tr.appendChild(td);
-  }
-*/
   //更新フォーム生成処理
   var tdEdit = document.createElement("td");
   var form = document.createElement("form");
@@ -196,43 +177,13 @@ function makeTdForTbody(data){
   formDel.appendChild(inputDel);
   tdDelete.appendChild(formDel);
   tr.appendChild(tdDelete);
-
 }
 
-function makeTest(){
-  var thColumnName = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE'];
-  var cn = "thead";
-  makeTr(cn, thColumnName);
-  cn = "tbody";
-  makeTr(cn, todoList);
-}
-
-
-
-//trを作成する関数
-//引数cn:thead or tbodyでどちらに作るかを判定
-//dataは何行trを作るかの情報
-function makeTr(cn, data){//
-  var className = document.getElementsByClassName(cn)[0];
-  //trを作る処理自体は1回しかしてない
-  var tr = document.createElement("tr");
-  for(d of data) {
-    // ここにthを作成する処理
-    if(cn == "thead"){
-      var th = document.createElement("th");
-      var cell = document.createTextNode(d);
-      th.appendChild(cell);
-      tr.appendChild(th);
-      className.appendChild(tr);
-    }
-    if(cn == "tbody"){ // tbodyのときだけidを付与（CRUDで使用するため
-      var tr = document.createElement("tr");
-      tr.setAttribute("id", "tableRowId"+d.id);
-      console.log(d);
-      //makeTdForTbody(d);
-      className.appendChild(tr);
-      makeTdForTbody(d);//trができる前にTDを作ろうとしていた のでtr作成td作成の処理順
-    }
-    //makeTdForTbody(d);
-  }
+//table削除処理呼び出し
+function redisplayTable(){
+  var removeTr = document.getElementById("thead");
+  var removeTbody = document.getElementById("tbody");
+  removeTr.innerHTML = "";
+  removeTbody.innerHTML = "";
+  getList();
 }

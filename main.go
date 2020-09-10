@@ -53,19 +53,14 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(res))
-		var id int
-		id, _ = strconv.Atoi(r.URL.Query().Get("id"))
-		if id != 0 { // TODO id 0の情報が来てる 原因調べる
-			delete(id)
-		}
 	case http.MethodPost:
 		err := json.NewDecoder(r.Body).Decode(&todoDecode)
 		checkDecodeError(err)
 		insert(todoDecode.Name, todoDecode.Todo)
 	case http.MethodDelete:
-		err := json.NewDecoder(r.Body).Decode(&todoDecode)
-		checkDecodeError(err)
-		delete(todoDecode.ID)
+		var id int
+		id, _ = strconv.Atoi(r.URL.Query().Get("id"))
+		delete(id)
 	case http.MethodPut:
 		err := json.NewDecoder(r.Body).Decode(&todoDecode)
 		checkDecodeError(err)
