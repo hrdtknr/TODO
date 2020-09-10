@@ -7,12 +7,6 @@
 </head>
 <body>
   <div>
-    <form>
-      <input type="button" onclick="getList()" value="一覧表示">
-      <input type="button" onclick="makeTest()" value="makeTest">
-    </form>
-  </div>
-  <div>
     <form class="newTodoForm">
       <input type="text" id="newName" placeholder="Name">
       <input type="text" id="newTodo" placeholder="Todo">
@@ -22,11 +16,6 @@
   <div class="divTable">
     <table border="3">
       <thead class="thead" id="thead"></thead>
-      <!--
-        thead内の
-        <tr class="tr" id="tr"></tr>
-        をなくしたのでエラー出る
-      -->
       <tbody class="tbody" id="tbody"></tbody>
     </table>
   </div>

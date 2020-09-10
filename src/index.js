@@ -89,38 +89,25 @@ function funcDelete(i){
 
 //table作成処理呼び出し
 function generateTable(){
-  var columnName = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE'];
-  const tableData = [
-    {className: "thead", data: columnName},
-    {className: "tbody", data: todoList}
-  ];
-
-  makeTr(tableData[0].className, tableData[0].data);
-  makeTr(tableData[1].className, tableData[1].data);
-}
-//trを作成する関数
-//引数cn:thead or tbodyでどちらに作るかを判定
-//dataは何行trを作るかの情報
-function makeTr(cn, data){
-  console.log(cn);
-
-  var className = document.getElementsByClassName(cn)[0];
+  // thead のtr作成
+  var thead = document.getElementsByClassName("thead")[0]
   var tr = document.createElement("tr");
-  for(d of data) {
-    if(cn == "thead"){
-      var th = document.createElement("th");
-      var cell = document.createTextNode(d);
-      th.appendChild(cell);
-      tr.appendChild(th);
-      className.appendChild(tr);
-    }
-    if(cn == "tbody"){ // tbodyのときだけidを付与（CRUDで使用するため
-      var tr = document.createElement("tr");
-      tr.setAttribute("id", "tableRowId"+d.id);
-      console.log(d);
-      className.appendChild(tr);
-      makeTdForTbody(d); //td作成処理
-    }
+  var column = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE']; //thead column
+  for(c of column){
+    var th = document.createElement("th");
+    var cell = document.createTextNode(c);
+    th.appendChild(cell);
+    tr.appendChild(th);
+    thead.appendChild(tr);
+  }
+
+  // tbody のtr作成
+  var tbody = document.getElementsByClassName("tbody")[0]
+  for(todo of todoList){
+    var tr = document.createElement("tr");
+    tr.setAttribute("id", "tableRowId"+todo.id);
+    tbody.appendChild(tr);
+    makeTdForTbody(todo); //td作成処理
   }
 }
 
@@ -128,16 +115,12 @@ function makeTr(cn, data){
 // td内に挿入するデータが引数（id,name,todo）
 function makeTdForTbody(data){
   //ループ処理用変数宣言
-  console.log("data:"+data);
-  console.log("id:"+data.id);
   var tmp = [data.id, data.name, data.todo];
-  console.log("tmp;"+tmp);
   var setId = ["editId", "nameForBlank", "todoForBlank"];
   // ID, NAME, TODO部分の作成
   var tr = document.getElementById("tableRowId"+data.id);
   var i = 0;
   for(t of tmp){
-    console.log("t:"+t)
     var td = document.createElement("td");
     td.setAttribute("id", setId[i]+tmp[0]);
     td.setAttribute("value", t);
@@ -150,6 +133,7 @@ function makeTdForTbody(data){
   var tdEdit = document.createElement("td");
   var form = document.createElement("form");
   var attr = ["editName", "editTodo"];
+  // TODO setaattrに書きたい内容をStringの配列で保持して拡張for文?
   for(var i = 0; i < 3; i++){
     var input = document.createElement("input");
     if(i != 2){
