@@ -130,8 +130,28 @@ function makeTrForTbody(){
 }
 
 // tbodyのtrにtdを作成する関数
-function makeTdForTbody(row_id){
+// td内に挿入するデータが引数（id,name,todo）
+function makeTdForTbody(data){
   //ループ処理用変数宣言
+  console.log("data:"+data);
+  console.log("id:"+data.id);
+  var tmp = [data.id, data.name, data.todo];
+  console.log("tmp;"+tmp);
+  var setId = ["editId", "nameForBlank", "todoForBlank"];
+  // ID, NAME, TODO部分の作成
+  var tr = document.getElementById("tableRowId"+data.id);
+  var i = 0;
+  for(t of tmp){
+    console.log("t:"+t)
+    var td = document.createElement("td");
+    td.setAttribute("id", setId[i]+tmp[0]);
+    td.setAttribute("value", t);
+    var cell = document.createTextNode(t);
+    td.appendChild(cell);
+    tr.appendChild(td);
+    i++
+  }
+  /*
   var tmp = [todoList[row_id].id, todoList[row_id].name, todoList[row_id].todo];
   var setId = ["editId", "nameForBlank", "todoForBlank"];
   // ID, NAME, TODO部分の作成
@@ -144,7 +164,7 @@ function makeTdForTbody(row_id){
     td.appendChild(cell);
     tr.appendChild(td);
   }
-
+*/
   //更新フォーム生成処理
   var tdEdit = document.createElement("td");
   var form = document.createElement("form");
@@ -176,23 +196,43 @@ function makeTdForTbody(row_id){
   formDel.appendChild(inputDel);
   tdDelete.appendChild(formDel);
   tr.appendChild(tdDelete);
+
 }
 
 function makeTest(){
-  
-  var table = document.getElementsByClassName("tableTest")[0]
-  var thead = document.createElement("thead");
-  var tbody = document.createElement("tbody");
-  var tr = document.createElement("tr");
-
   var thColumnName = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE'];
-  for(column of thColumnName){
-    var th = document.createElement("th");
-    var cell = document.createTextNode(column);
-    th.appendChild(cell);
-    tr.appendChild(th);
-  }
-  thead.appendChild(tr);
-  table.appendChild(thead);
+  var cn = "thead";
+  makeTr(cn, thColumnName);
+  cn = "tbody";
+  makeTr(cn, todoList);
+}
 
+
+
+//trを作成する関数
+//引数cn:thead or tbodyでどちらに作るかを判定
+//dataは何行trを作るかの情報
+function makeTr(cn, data){//
+  var className = document.getElementsByClassName(cn)[0];
+  //trを作る処理自体は1回しかしてない
+  var tr = document.createElement("tr");
+  for(d of data) {
+    // ここにthを作成する処理
+    if(cn == "thead"){
+      var th = document.createElement("th");
+      var cell = document.createTextNode(d);
+      th.appendChild(cell);
+      tr.appendChild(th);
+      className.appendChild(tr);
+    }
+    if(cn == "tbody"){ // tbodyのときだけidを付与（CRUDで使用するため
+      var tr = document.createElement("tr");
+      tr.setAttribute("id", "tableRowId"+d.id);
+      console.log(d);
+      //makeTdForTbody(d);
+      className.appendChild(tr);
+      makeTdForTbody(d);//trができる前にTDを作ろうとしていた のでtr作成td作成の処理順
+    }
+    //makeTdForTbody(d);
+  }
 }
