@@ -1,6 +1,7 @@
 var todoList;
 
 const DATA_URL = 'http://localhost:8080/todoList';
+getList();
 
 function getList() {
   fetch(DATA_URL)
@@ -38,9 +39,10 @@ function funcInsert() {
     redisplayTable();
   }
   // TODO テキストボックスを空にする処理が必要
-  // 新規TODOもjsの関数で表示して再表示する処理
   // https://web-tsuku.life/input-text-form-clear/
   // フォームクリアイベントをはさむ
+  document.getElementById("newName").value = '';
+  document.getElementById("newTodo").value = '';
 }
 
 // ボタン押したときにテキストボックスの中身を取得する仕組み
@@ -78,13 +80,7 @@ function funcDelete(i){
   // NG　http://localhost:8080/
   // OK　http://localhost:8080/todoList
   // エンドポイントを指定する
-  // TODO hang遡って送信方法確認
-  /*
-  var url = new URL("http://localhost:8080/todoList"),
-    params = {id: i}
-  Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
-  */
-  const params = { id: i};
+  const params = {id: i};
   const qs = new URLSearchParams(params)
   fetch(`http://localhost:8080/todoList?${qs}`).then();
 
@@ -180,4 +176,23 @@ function makeTdForTbody(row_id){
   formDel.appendChild(inputDel);
   tdDelete.appendChild(formDel);
   tr.appendChild(tdDelete);
+}
+
+function makeTest(){
+  
+  var table = document.getElementsByClassName("tableTest")[0]
+  var thead = document.createElement("thead");
+  var tbody = document.createElement("tbody");
+  var tr = document.createElement("tr");
+
+  var thColumnName = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE'];
+  for(column of thColumnName){
+    var th = document.createElement("th");
+    var cell = document.createTextNode(column);
+    th.appendChild(cell);
+    tr.appendChild(th);
+  }
+  thead.appendChild(tr);
+  table.appendChild(thead);
+
 }
