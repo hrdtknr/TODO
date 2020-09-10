@@ -36,10 +36,11 @@ function funcInsert() {
     .then((res)=> res.json())
     .then(console.log).catch(console.error);
 
-    redisplayTable();
+
   }
   document.getElementById("newName").value = '';
   document.getElementById("newTodo").value = '';
+  redisplayTable();
 }
 
 // ボタン押したときにテキストボックスの中身を取得する仕組み
@@ -69,6 +70,7 @@ function funcUpdate(i){
   .then((res)=> res.json())
   .then(console.log).catch(console.error);
 
+  getList();
   redisplayTable();
 }
 
