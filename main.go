@@ -3,10 +3,10 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"net/http"
 	"strconv"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 // 構造体の変数名の先頭を大文字にしないとテンプレートファイルに読みこめない
@@ -22,19 +22,23 @@ type TodoList []Todo
 var (
 	todoList TodoList
 	// DB接続設定
-	// TODO js側の設定が終えたら 定義をdb = *sql.DBに変更してsql.Openの処理をmain内へ
-	db, err = sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
+	db  *sql.DB
+	err error
 )
-// go側を変更する前の状態にして、先にjs側の変更を
+
 func main() {
+	db, err = sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
+	if err != nil {
+		log.Println(err)
+	}
+	defer db.Close()
+
 	// http://localhost:8080/ にアクセスしたとき、ソースの".src"内のhtmlファイルを表示する
 	http.Handle("/", http.FileServer(http.Dir("./src")))
 	http.HandleFunc("/todoList", handleIndex) // go側でインポート設定する必要があった
 	port := "8080"
 	log.Printf("listening port %s", port)
 	log.Print(http.ListenAndServe(":"+port, nil))
-
-	db.Close() // TODO closeする場所確認
 }
 
 func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが入ってて、クエリとGETを組み合わせる
@@ -51,7 +55,6 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 		w.Write([]byte(res))
 		var id int
 		id, _ = strconv.Atoi(r.URL.Query().Get("id"))
-		//log.Println("id",id)
 		if id != 0 { // TODO id 0の情報が来てる 原因調べる
 			delete(id)
 		}
@@ -70,8 +73,8 @@ func handleIndex(w http.ResponseWriter, r *http.Request) { // この中にURLが
 	}
 }
 
-func checkDecodeError(err error){
-	if err != nil{
+func checkDecodeError(err error) {
+	if err != nil {
 		log.Println(err)
 	}
 }
@@ -84,10 +87,7 @@ func getDB() {
 		return
 	}
 
-	// 仮のリスト
 	var todoListTmp TodoList
-	// TODO ↑のarrayから↓のSlicesに変更
-	// todoListTmp := []TodoList{}
 	for rows.Next() {
 		var id int
 		var name string
@@ -96,16 +96,14 @@ func getDB() {
 			log.Println(err)
 			return
 		}
-		// Todo型の変数todoTmpに取得した情報を代入
+
 		todoTmp := Todo{
 			ID:   id,
 			Name: name,
 			Todo: todo,
 		}
-		// 配列todoListに要素を追加
 		todoListTmp = append(todoListTmp, todoTmp)
 	}
-	// 仮リストの中身を元リストへ代入（appendではない
 	todoList = todoListTmp
 }
 
