@@ -15,7 +15,7 @@ function getList() {
 }
 
 // insert処理
-function insertTodo() {
+function createTodo() {
   let obj = {
     id: 0,
     name: document.getElementById("newName").value,
@@ -25,13 +25,13 @@ function insertTodo() {
   if (!obj.name && !obj.todo) {
     alert("NameかTodoのどちらかは入力してください");
   } else {
-    const method = "Post";
-    const headers = {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    };
-    const body = JSON.stringify(obj);
-    fetch(DATA_URL, { method, headers, body })
+    fetch(DATA_URL, {
+      method: "Post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(obj),
+    })
       .then((res) => res.json())
       .then(console.log)
       .catch(console.error);
@@ -56,13 +56,13 @@ function updateTodo(i) {
     obj.todo = document.getElementById("todoForBlank" + i).textContent;
   }
 
-  const method = "Put";
-  const headers = {
-    Accept: "application/json",
-    "Content-Type": "application/json",
-  };
-  const body = JSON.stringify(obj);
-  fetch(DATA_URL, { method, headers, body })
+  fetch(DATA_URL, {
+    method: "Put",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(obj),
+  })
     .then((res) => res.json())
     .then(console.log)
     .catch(console.error);
@@ -120,7 +120,6 @@ function makeTdForTbody(todo) {
 
   const tdEdit = document.createElement("td");
   const form = document.createElement("form");
-
   inputAttr = {
     name: {
       type: "text",
