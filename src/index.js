@@ -120,7 +120,6 @@ function makeTdForTbody(todo) {
 
   const tdEdit = document.createElement("td");
   const form = document.createElement("form");
-
   inputAttr = {
     name: {
       type: "text",
