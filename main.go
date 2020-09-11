@@ -37,7 +37,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	var todoDecode Todo
 	switch r.Method {
 	case http.MethodGet:
-		todoList, err := getTodos();
+		todoList, err := getTodos()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -115,7 +115,7 @@ func saveTodo(name string, todo string) (err error) {
 		return err
 	}
 	if err := ins.Exec(name, todo); err != nil {
-		log.Println(err);
+		log.Println(err)
 		return err
 	}
 	return nil
