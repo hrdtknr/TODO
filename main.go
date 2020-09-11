@@ -86,6 +86,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 func getTodos(/*引数でDBを渡すか？*/) (returnTodoList TodoList, err error) {
 	log.Println("db in getTodos:",db)//ここまで処理はきてる
 	// dbの情報が届いてないので、変数宣言のスコープ
+	// 2020/09/12 01:58:30 db in getTodos: <nil>
 	// invalid memory address or nil pointer dereferenceの原因
 	rows, err := db.Query("SELECT * FROM todo")//ここがあやしい
 	log.Println("1111111")//ここまで処理は来てない
