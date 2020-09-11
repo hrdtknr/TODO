@@ -95,7 +95,7 @@ function generateTable(){
     const tr = document.createElement("tr");
     tr.setAttribute("id", "tableRowId"+todo.id);
     tbody.appendChild(tr);
-    makeTdForTbody(todo);
+    makeTdForTbody3(todo);
   }
 }
 
@@ -154,4 +154,70 @@ function redisplayTable(){
   removeTr.innerHTML = "";
   removeTbody.innerHTML = "";
   getList();
+}
+
+
+
+
+function makeTdForTbody2(){
+  for(todo of todoList){
+    console.log("一回の処理：ここから");
+    makeTdForTbody3(todo);
+    console.log("一回の処理：ここまで");
+  }
+}
+// tbodyのtrにtdを作成する関数
+function makeTdForTbody3(todo){
+  const setAttrData = [
+    {id: "editId"+todo.id, value: todo.id},
+    {id: "nameForBlank"+todo.id, value: todo.name},
+    {id: "todoForBlank"+todo.id, value: todo.todo},
+  ];
+  const tr = document.getElementById("tableRowId"+todo.id)
+  Object.keys(setAttrData).forEach((key) => {
+    const td = document.createElement("td");
+    td.setAttribute("id", setAttrData[key].id);
+    td.setAttribute("value", setAttrData[key].value);
+    const cell = document.createTextNode(setAttrData[key].value);
+    td.appendChild(cell);
+    tr.appendChild(td);
+  });
+
+  const tdEdit = document.createElement("td");
+  const form = document.createElement("form");
+  const setAttrData2 = [
+    {attr: "type", value: "text"},
+    {attr: "id", value: "editName"+todo.id},
+    {attr: "placeholder", value: todo.name},
+  ];
+  const setAttrData3 = [
+    {attr: "type", value: "text"},
+    {attr: "id", value: "editTodo"+todo.id},
+    {attr: "placeholder", value: todo.todo},
+  ];
+  const setAttrData4 = [
+    {attr: "type", value: "button"},
+    {attr: "onclick", value: "updateTodo("+todo.id+")"},
+    {attr: "value", value: "更新"},
+  ];
+  const setAttrDataArray = [setAttrData2,setAttrData3,setAttrData4];
+  for(set of setAttrDataArray){
+    const input = document.createElement("input");
+    Object.keys(set).forEach((key)=>{
+      input.setAttribute(set[key].attr, set[key].value);
+    });
+    form.appendChild(input);
+  }
+  tdEdit.appendChild(form);
+  tr.appendChild(tdEdit);
+
+  const tdDelete = document.createElement("td");
+  const formDel = document.createElement("form");
+  const inputDel = document.createElement("input");
+  inputDel.setAttribute("type", "button");
+  inputDel.setAttribute("onclick", "deleteTodo("+todo.id+")");
+  inputDel.setAttribute("value","削除");
+  formDel.appendChild(inputDel);
+  tdDelete.appendChild(formDel);
+  tr.appendChild(tdDelete);
 }
