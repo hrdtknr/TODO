@@ -1,10 +1,10 @@
 let todoList;
-const DATA_URL = "http://localhost:8080/todoList";
+const API_ENDPOINT = "http://localhost:8080/todoList";
 getList();
 
 // jsonデータ取得とテーブル作成
 function getList() {
-  fetch(DATA_URL)
+  fetch(API_ENDPOINT)
     .then(function (response) {
       return response.json();
     })
@@ -17,7 +17,7 @@ function getList() {
 // insert処理
 function createTodo() {
   let obj = {
-    id: 0,
+    //id: 0,
     name: document.getElementById("newName").value,
     todo: document.getElementById("newTodo").value,
   };
@@ -25,7 +25,7 @@ function createTodo() {
   if (!obj.name && !obj.todo) {
     alert("NameかTodoのどちらかは入力してください");
   } else {
-    fetch(DATA_URL, {
+    fetch(API_ENDPOINT, {
       method: "Post",
       headers: {
         "Content-Type": "application/json",
@@ -33,8 +33,8 @@ function createTodo() {
       body: JSON.stringify(obj),
     })
       .then((res) => res.json())
-      .then(console.log)
-      .catch(console.error);
+      .then(alert)
+      .catch(alert);
   }
   document.getElementById("newName").value = "";
   document.getElementById("newTodo").value = "";
@@ -56,7 +56,7 @@ function updateTodo(i) {
     obj.todo = document.getElementById("todoForBlank" + i).textContent;
   }
 
-  fetch(DATA_URL, {
+  fetch(API_ENDPOINT, {
     method: "Put",
     headers: {
       "Content-Type": "application/json",
@@ -64,8 +64,8 @@ function updateTodo(i) {
     body: JSON.stringify(obj),
   })
     .then((res) => res.json())
-    .then(console.log)
-    .catch(console.error);
+    .then(alert)
+    .catch(alert);
 
   redisplayTable();
 }
@@ -74,9 +74,9 @@ function updateTodo(i) {
 function deleteTodo(i) {
   const params = { id: i };
   const qs = new URLSearchParams(params);
-  fetch(`http://localhost:8080/todoList?${qs}`, { method: "DELETE" }).then();
-
-  redisplayTable();
+  fetch(`http://localhost:8080/todoList?${qs}`, { method: "DELETE" }).then(
+    redisplayTable()
+  );
 }
 
 // table作成処理
