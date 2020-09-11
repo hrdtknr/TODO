@@ -163,4 +163,3 @@ function redisplayTable(){
   removeTbody.innerHTML = "";
   getList();
 }
-
