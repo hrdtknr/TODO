@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println("db in main:",db)
+	log.Println("db in main:", db)
 	defer db.Close()
 
 	http.Handle("/", http.FileServer(http.Dir("./src")))
@@ -39,9 +39,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	var todoDecode Todo
 	switch r.Method {
 	case http.MethodGet:
-		log.Println(db)
-		todoList, err := getTodos();//ここか
-		log.Println("xxxx")//ここにはきてない
+		todoList, err := getTodos()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -84,13 +82,8 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getTodos(/*引数でDBを渡すか？*/) (returnTodoList TodoList, err error) {
-	log.Println("db in getTodos:",db)//ここまで処理はきてる
-	// dbの情報が届いてないので、変数宣言のスコープ
-	// 2020/09/12 01:58:30 db in getTodos: <nil>
-	// invalid memory address or nil pointer dereferenceの原因
-	rows, err := db.Query("SELECT * FROM todo")//ここがあやしい
-	log.Println("1111111")//ここまで処理は来てない
+func getTodos() (returnTodoList TodoList, err error) {
+	rows, err := db.Query("SELECT * FROM todo")
 	defer rows.Close()
 	if err != nil {
 		log.Println(err)
@@ -124,7 +117,7 @@ func saveTodo(name string, todo string) (err error) {
 		log.Println(err)
 		return err
 	}
-	res, err := ins.Exec(name, todo);
+	res, err := ins.Exec(name, todo)
 	if err != nil {
 		log.Println(err)
 		return err
