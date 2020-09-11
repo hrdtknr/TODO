@@ -17,16 +17,14 @@ type Todo struct {
 
 type TodoList []Todo
 
-var (
-	db       *sql.DB
-	err      error
-)
+var db *sql.DB
 
 func main() {
-	db, err = sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
+	db, err := sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
 	if err != nil {
 		log.Println(err)
 	}
+	log.Println("db in main:",db)
 	defer db.Close()
 
 	http.Handle("/", http.FileServer(http.Dir("./src")))
@@ -40,7 +38,9 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	var todoDecode Todo
 	switch r.Method {
 	case http.MethodGet:
-		todoList, err := getTodos();
+		log.Println("asdad")
+		todoList, err := getTodos();//ここか
+		log.Println("xxxx")//ここにはきてない
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -83,11 +83,16 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getTodos() (returnTodoList TodoList, err error) {
-	rows, err := db.Query("SELECT * FROM todo")
+func getTodos(/*引数でDBを渡すか？*/) (returnTodoList TodoList, err error) {
+	log.Println("db in getTodos:",db)//ここまで処理はきてる
+	// dbの情報が届いてないので、変数宣言のスコープ
+	// invalid memory address or nil pointer dereferenceの原因
+	rows, err := db.Query("SELECT * FROM todo")//ここがあやしい
+	log.Println("1111111")//ここまで処理は来てない
 	defer rows.Close()
 	if err != nil {
 		log.Println(err)
+		log.Println(rows)
 		return nil, err
 	}
 
