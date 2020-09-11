@@ -20,7 +20,8 @@ type TodoList []Todo
 var db *sql.DB
 
 func main() {
-	db, err := sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
+	var err error
+	db, err = sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
 	if err != nil {
 		log.Println(err)
 	}
@@ -38,7 +39,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	var todoDecode Todo
 	switch r.Method {
 	case http.MethodGet:
-		log.Println("asdad")
+		log.Println(db)
 		todoList, err := getTodos();//ここか
 		log.Println("xxxx")//ここにはきてない
 		if err != nil {
@@ -86,6 +87,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 func getTodos(/*引数でDBを渡すか？*/) (returnTodoList TodoList, err error) {
 	log.Println("db in getTodos:",db)//ここまで処理はきてる
 	// dbの情報が届いてないので、変数宣言のスコープ
+	// 2020/09/12 01:58:30 db in getTodos: <nil>
 	// invalid memory address or nil pointer dereferenceの原因
 	rows, err := db.Query("SELECT * FROM todo")//ここがあやしい
 	log.Println("1111111")//ここまで処理は来てない
