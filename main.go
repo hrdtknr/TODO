@@ -18,7 +18,7 @@ type Todo struct {
 type TodoList []Todo
 
 var (
-	todoList TodoList
+	//todoList TodoList
 	db       *sql.DB
 	err      error
 )
@@ -41,7 +41,8 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	var todoDecode Todo
 	switch r.Method {
 	case http.MethodGet:
-		if err := getTodos(); err != nil {
+		todoList, err := getTodos();
+		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -83,22 +84,22 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getTodos() (err error) {
+func getTodos() (returnTodoList TodoList, err error) {
 	rows, err := db.Query("SELECT * FROM todo")
 	defer rows.Close()
 	if err != nil {
 		log.Println(err)
-		return err
+		return nil, err
 	}
 
-	var todoListTmp TodoList
+	var todoList TodoList
 	for rows.Next() {
 		var id int
 		var name string
 		var todo string
 		if err := rows.Scan(&id, &name, &todo); err != nil {
 			log.Println(err)
-			return err
+			return nil, err
 		}
 
 		todoTmp := Todo{
@@ -106,10 +107,9 @@ func getTodos() (err error) {
 			Name: name,
 			Todo: todo,
 		}
-		todoListTmp = append(todoListTmp, todoTmp)
+		todoList = append(todoList, todoTmp)
 	}
-	todoList = todoListTmp
-	return nil
+	return todoList, nil
 }
 
 func saveTodo(name string, todo string) (err error) {
