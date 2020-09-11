@@ -79,20 +79,20 @@ function deleteTodo(i){
 
 // table作成処理
 function generateTable(){
-  let thead = document.getElementsByClassName("thead")[0]
-  let tr = document.createElement("tr");
-  let column = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE'];
+  const thead = document.getElementsByClassName("thead")[0]
+  const tr = document.createElement("tr");
+  const column = ['ID', 'NAME', 'TODO', 'EDIT', 'DELETE'];
   for(c of column){
-    let th = document.createElement("th");
-    let cell = document.createTextNode(c);
+    const th = document.createElement("th");
+    const cell = document.createTextNode(c);
     th.appendChild(cell);
     tr.appendChild(th);
     thead.appendChild(tr);
   }
 
-  let tbody = document.getElementsByClassName("tbody")[0]
+  const tbody = document.getElementsByClassName("tbody")[0]
   for(todo of todoList){
-    let tr = document.createElement("tr");
+    const tr = document.createElement("tr");
     tr.setAttribute("id", "tableRowId"+todo.id);
     tbody.appendChild(tr);
     makeTdForTbody(todo);
@@ -101,26 +101,26 @@ function generateTable(){
 
 // tbodyのtrにtdを作成する関数
 function makeTdForTbody(data){
-  let tmp = [data.id, data.name, data.todo];
-  let setId = ["editId", "nameForBlank", "todoForBlank"];
-  let tr = document.getElementById("tableRowId"+data.id);
+  const tmp = [data.id, data.name, data.todo];
+  const setId = ["editId", "nameForBlank", "todoForBlank"];
+  const tr = document.getElementById("tableRowId"+data.id);
   let i = 0;
   for(t of tmp){
-    let td = document.createElement("td");
+    const td = document.createElement("td");
     td.setAttribute("id", setId[i]+tmp[0]);
     td.setAttribute("value", t);
-    let cell = document.createTextNode(t);
+    const cell = document.createTextNode(t);
     td.appendChild(cell);
     tr.appendChild(td);
     i++
   }
 
-  let tdEdit = document.createElement("td");
-  let form = document.createElement("form");
-  let attr = ["editName", "editTodo", "button"];
+  const tdEdit = document.createElement("td");
+  const form = document.createElement("form");
+  const attr = ["editName", "editTodo", "button"];
   i = 0;
   for(a of attr){
-    let input = document.createElement("input");
+    const input = document.createElement("input");
     if(a != "button"){
       input.setAttribute("type", "text");
       input.setAttribute("id", a+tmp[0]);
