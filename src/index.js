@@ -95,79 +95,12 @@ function generateTable(){
     const tr = document.createElement("tr");
     tr.setAttribute("id", "tableRowId"+todo.id);
     tbody.appendChild(tr);
-    makeTdForTbody3(todo);
+    makeTdForTbody(todo);
   }
 }
 
 // tbodyのtrにtdを作成する関数
-function makeTdForTbody(data){
-  const tmp = [data.id, data.name, data.todo];
-  const setId = ["editId", "nameForBlank", "todoForBlank"];
-  const tr = document.getElementById("tableRowId"+data.id);
-  let i = 0;
-  for(t of tmp){
-    const td = document.createElement("td");
-    td.setAttribute("id", setId[i]+tmp[0]);
-    td.setAttribute("value", t);
-    const cell = document.createTextNode(t);
-    td.appendChild(cell);
-    tr.appendChild(td);
-    i++
-  }
-
-  const tdEdit = document.createElement("td");
-  const form = document.createElement("form");
-  const attr = ["editName", "editTodo", "button"];
-  i = 0;
-  for(a of attr){
-    const input = document.createElement("input");
-    if(a != "button"){
-      input.setAttribute("type", "text");
-      input.setAttribute("id", a+tmp[0]);
-      input.setAttribute("placeholder", tmp[i+1]);
-    } else {
-      input.setAttribute("type", "button");
-      input.setAttribute("onclick", "updateTodo("+tmp[0]+")");
-      input.setAttribute("value", "更新");
-    }
-    form.appendChild(input);
-    i++;
-  }
-  tdEdit.appendChild(form);
-  tr.appendChild(tdEdit);
-
-  const tdDelete = document.createElement("td");
-  const formDel = document.createElement("form");
-  const inputDel = document.createElement("input");
-  inputDel.setAttribute("type", "button");
-  inputDel.setAttribute("onclick", "deleteTodo("+tmp[0]+")");
-  inputDel.setAttribute("value","削除");
-  formDel.appendChild(inputDel);
-  tdDelete.appendChild(formDel);
-  tr.appendChild(tdDelete);
-}
-
-// table削除処理と再表示処理
-function redisplayTable(){
-  const removeTr = document.getElementById("thead");
-  const removeTbody = document.getElementById("tbody");
-  removeTr.innerHTML = "";
-  removeTbody.innerHTML = "";
-  getList();
-}
-
-
-
-
-function makeTdForTbody2(){
-  for(todo of todoList){
-    console.log("一回の処理：ここから");
-    makeTdForTbody3(todo);
-    console.log("一回の処理：ここまで");
-  }
-}
-// tbodyのtrにtdを作成する関数
-function makeTdForTbody3(todo){
+function makeTdForTbody(todo){
   const setAttrData = [
     {id: "editId"+todo.id, value: todo.id},
     {id: "nameForBlank"+todo.id, value: todo.name},
@@ -220,4 +153,13 @@ function makeTdForTbody3(todo){
   formDel.appendChild(inputDel);
   tdDelete.appendChild(formDel);
   tr.appendChild(tdDelete);
+}
+
+// table削除処理と再表示処理
+function redisplayTable(){
+  const removeTr = document.getElementById("thead");
+  const removeTbody = document.getElementById("tbody");
+  removeTr.innerHTML = "";
+  removeTbody.innerHTML = "";
+  getList();
 }
