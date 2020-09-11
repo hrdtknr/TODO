@@ -33,8 +33,12 @@ function createTodo() {
       body: JSON.stringify(obj),
     })
       .then((res) => res.json())
-      .then(alert)
-      .catch(alert);
+      .then(() => {
+        alert("登録しました");
+      })
+      .catch(() => {
+        alert("登録失敗しました");
+      });
   }
   document.getElementById("newName").value = "";
   document.getElementById("newTodo").value = "";
@@ -64,8 +68,12 @@ function updateTodo(i) {
     body: JSON.stringify(obj),
   })
     .then((res) => res.json())
-    .then(alert)
-    .catch(alert);
+    .then(() => {
+      alert("登録しました");
+    })
+    .catch(() => {
+      alert("登録失敗しました");
+    });
 
   redisplayTable();
 }
