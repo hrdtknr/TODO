@@ -17,12 +17,10 @@ type Todo struct {
 
 type TodoList []Todo
 
-var (
-	db       *sql.DB
-	err      error
-)
+var db *sql.DB
 
 func main() {
+	var err error
 	db, err = sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
 	if err != nil {
 		log.Println(err)
@@ -40,7 +38,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	var todoDecode Todo
 	switch r.Method {
 	case http.MethodGet:
-		todoList, err := getTodos();
+		todoList, err := getTodos()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -117,13 +115,12 @@ func saveTodo(name string, todo string) (err error) {
 		log.Println(err)
 		return err
 	}
-	res, err := ins.Exec(name, todo);
+
+	res, err := ins.Exec(name, todo)
 	if err != nil {
-		log.Println(err)
+		log.Println(res, err)
 		return err
 	}
-	// TODO resを宣言して使っていないので仮
-	log.Println(res)
 	return nil
 }
 
@@ -133,7 +130,12 @@ func deleteTodo(id int) (err error) {
 		log.Println(err)
 		return err
 	}
-	del.Exec(id)
+
+	res, err := del.Exec(id)
+	if err != nil {
+		log.Println(res, err)
+		return err
+	}
 	return nil
 }
 
@@ -143,6 +145,11 @@ func updateTodo(id int, name string, todo string) (err error) {
 		log.Println(err)
 		return err
 	}
-	upd.Exec(name, todo, id)
+
+	res, err := upd.Exec(name, todo, id)
+	if err != nil {
+		log.Println(res, err)
+		return err
+	}
 	return nil
 }
