@@ -17,14 +17,10 @@ type Todo struct {
 
 type TodoList []Todo
 
-var (
-	//todoList TodoList
-	db       *sql.DB
-	err      error
-)
+var db *sql.DB
 
 func main() {
-	db, err = sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
+	db, err := sql.Open("mysql", "root:1234@tcp(127.0.0.1:3306)/go")
 	if err != nil {
 		log.Println(err)
 	}
@@ -41,7 +37,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	var todoDecode Todo
 	switch r.Method {
 	case http.MethodGet:
-		todoList, err := getTodos();
+		todoList, err := getTodos()
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -118,7 +114,10 @@ func saveTodo(name string, todo string) (err error) {
 		log.Println(err)
 		return err
 	}
-	ins.Exec(name, todo)
+	if err := ins.Exec(name, todo); err != nil {
+		log.Println(err)
+		return err
+	}
 	return nil
 }
 
