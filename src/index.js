@@ -17,7 +17,6 @@ function getList() {
 // insert処理
 function createTodo() {
   let obj = {
-    //id: 0,
     name: document.getElementById("newName").value,
     todo: document.getElementById("newTodo").value,
   };
@@ -31,13 +30,16 @@ function createTodo() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(obj),
-    }).catch(() => {
-      alert("登録失敗しました");
-    });
+    })
+      .then(() => {
+        redisplayTable();
+      })
+      .catch(() => {
+        alert("登録失敗しました");
+      });
   }
   document.getElementById("newName").value = "";
   document.getElementById("newTodo").value = "";
-  redisplayTable();
 }
 
 // update処理
@@ -61,11 +63,13 @@ function updateTodo(i) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(obj, null),
-  }).catch(() => {
-    alert("登録失敗しました");
-  });
-
-  redisplayTable();
+  })
+    .then(() => {
+      redisplayTable();
+    })
+    .catch(() => {
+      alert("登録失敗しました");
+    });
 }
 
 // delete処理 クエリパラメータ

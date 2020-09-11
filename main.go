@@ -25,7 +25,6 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println("db in main:", db)
 	defer db.Close()
 
 	http.Handle("/", http.FileServer(http.Dir("./src")))
@@ -87,7 +86,6 @@ func getTodos() (returnTodoList TodoList, err error) {
 	defer rows.Close()
 	if err != nil {
 		log.Println(err)
-		log.Println(rows)
 		return nil, err
 	}
 
@@ -117,13 +115,12 @@ func saveTodo(name string, todo string) (err error) {
 		log.Println(err)
 		return err
 	}
+
 	res, err := ins.Exec(name, todo)
 	if err != nil {
-		log.Println(err)
+		log.Println(res, err)
 		return err
 	}
-	// TODO resを宣言して使っていないので仮
-	log.Println(res)
 	return nil
 }
 
@@ -133,7 +130,12 @@ func deleteTodo(id int) (err error) {
 		log.Println(err)
 		return err
 	}
-	del.Exec(id)
+
+	res, err := del.Exec(id)
+	if err != nil {
+		log.Println(res, err)
+		return err
+	}
 	return nil
 }
 
@@ -143,6 +145,11 @@ func updateTodo(id int, name string, todo string) (err error) {
 		log.Println(err)
 		return err
 	}
-	upd.Exec(name, todo, id)
+
+	res, err := upd.Exec(name, todo, id)
+	if err != nil {
+		log.Println(res, err)
+		return err
+	}
 	return nil
 }
