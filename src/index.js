@@ -31,14 +31,9 @@ function createTodo() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(obj),
-    })
-      .then((res) => res.json())
-      .then(() => {
-        alert("登録しました");
-      })
-      .catch(() => {
-        alert("登録失敗しました");
-      });
+    }).catch(() => {
+      alert("登録失敗しました");
+    });
   }
   document.getElementById("newName").value = "";
   document.getElementById("newTodo").value = "";
@@ -65,15 +60,10 @@ function updateTodo(i) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(obj),
-  })
-    .then((res) => res.json())
-    .then(() => {
-      alert("登録しました");
-    })
-    .catch(() => {
-      alert("登録失敗しました");
-    });
+    body: JSON.stringify(obj, null),
+  }).catch(() => {
+    alert("登録失敗しました");
+  });
 
   redisplayTable();
 }
