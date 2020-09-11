@@ -41,7 +41,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 	var todoDecode Todo
 	switch r.Method {
 	case http.MethodGet:
-		if err := getDB(); err != nil {
+		if err := getTodos(); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -57,7 +57,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if err := insert(todoDecode.Name, todoDecode.Todo); err != nil {
+		if err := saveTodo(todoDecode.Name, todoDecode.Todo); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -67,7 +67,7 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if err := delete(id); err != nil {
+		if err := deleteTodo(id); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
@@ -76,15 +76,14 @@ func handleIndex(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		if err := update(todoDecode.ID, todoDecode.Name, todoDecode.Todo); err != nil {
+		if err := updateTodo(todoDecode.ID, todoDecode.Name, todoDecode.Todo); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
 }
 
-// DBからデータを取得
-func getDB() (err error) {
+func getTodos() (err error) {
 	rows, err := db.Query("SELECT * FROM todo")
 	defer rows.Close()
 	if err != nil {
@@ -113,8 +112,7 @@ func getDB() (err error) {
 	return nil
 }
 
-// DB insert処理
-func insert(name string, todo string) (err error) {
+func saveTodo(name string, todo string) (err error) {
 	ins, err := db.Prepare("INSERT INTO todo(name, todo) VALUES(?,?)")
 	if err != nil {
 		log.Println(err)
@@ -124,8 +122,7 @@ func insert(name string, todo string) (err error) {
 	return nil
 }
 
-// DB delete処理
-func delete(id int) (err error) {
+func deleteTodo(id int) (err error) {
 	del, err := db.Prepare("DELETE FROM todo WHERE id = ?")
 	if err != nil {
 		log.Println(err)
@@ -135,8 +132,7 @@ func delete(id int) (err error) {
 	return nil
 }
 
-// DB update処理
-func update(id int, name string, todo string) (err error) {
+func updateTodo(id int, name string, todo string) (err error) {
 	upd, err := db.Prepare("UPDATE todo SET name = ?, todo = ? WHERE id = ?")
 	if err != nil {
 		log.Println(err)
