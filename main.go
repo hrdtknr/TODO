@@ -118,7 +118,7 @@ func saveTodo(name string, todo string) (err error) {
 
 	res, err := ins.Exec(name, todo)
 	if err != nil {
-		log.Println(res, err)
+		log.Println(res, err) // TODO Resultを受け取ったres変数の扱いを確認
 		return err
 	}
 	return nil
