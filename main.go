@@ -116,9 +116,8 @@ func saveTodo(name string, todo string) (err error) {
 		return err
 	}
 
-	res, err := ins.Exec(name, todo)
-	if err != nil {
-		log.Println(res, err) // TODO Resultを受け取ったres変数の扱いを確認
+	if _, err := ins.Exec(name, todo); err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil
@@ -131,9 +130,8 @@ func deleteTodo(id int) (err error) {
 		return err
 	}
 
-	res, err := del.Exec(id)
-	if err != nil {
-		log.Println(res, err)
+	if _, err := del.Exec(id); err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil
@@ -146,9 +144,8 @@ func updateTodo(id int, name string, todo string) (err error) {
 		return err
 	}
 
-	res, err := upd.Exec(name, todo, id)
-	if err != nil {
-		log.Println(res, err)
+	if _, err := upd.Exec(name, todo, id); err != nil {
+		log.Println(err)
 		return err
 	}
 	return nil
